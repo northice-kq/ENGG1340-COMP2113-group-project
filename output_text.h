@@ -21,7 +21,9 @@ using namespace std;
 //          dot_delay (int)  - milliseconds delay between each dot
 //                                 (default 200ms for dramatic trailing)
 
-void writer_print(const string& text, int char_delay = 40, int dot_delay = 200, bool is_dots = true);
+//          NOTE!!!! To use the default settings, omit the last three perimeters
+
+void writer_print(const string& text, bool is_dots = true, int char_delay = 40, int dot_delay = 200);
 
 //
 // What it does: waits for the player to press Enter before continuing.
