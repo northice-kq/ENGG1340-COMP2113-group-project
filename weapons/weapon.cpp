@@ -8,7 +8,7 @@ Weapon::Weapon(std::string name, std::string description, int baseDamage,
     : name(name), description(description), baseDamage(baseDamage),
       durability(durability), level(1), critHitRate(critHitRate) {}
 
-void Weapon::printDescription() {
+void Weapon::printDescription() const {
     std::cout << "Name      : " << name << std::endl;
     if (name != "Fist") {
         std::cout << "Level     : " << level << std::endl;
