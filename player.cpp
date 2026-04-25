@@ -6,7 +6,7 @@ void Player::attackEnemy() {
     return;
     }
     int damage = weapons[current_weapon]->useWeapon();
-    damage += attack
+    damage += attack;
     std::cout << "Player deal " << damage << " damage\n";
 }
 void Player::useHealing(int index) {
@@ -20,5 +20,17 @@ void Player::useHealing(int index) {
         std::cout << "Player HP is now " << HP << std::endl;
     } else {
     std::cout << "Healing failed.\n";
+    }
+}
+void Player::showWeapons() {
+    std::cout << "=== Weapons ===\n";
+    for (int i = 0; i < weapons.size(); i++) {
+        std::cout << i << ": " << weapons[i]->name << std::endl;
+    }
+}
+void Player::showHealings() {
+    std::cout << "=== Healings ===\n";
+    for (int i = 0; i < healings.size(); i++) {
+        std::cout << i << ": " << healings[i]->name << << " (x" << healings[i]->count << ")\n";
     }
 }
