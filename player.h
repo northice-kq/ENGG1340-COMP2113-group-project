@@ -17,6 +17,8 @@ struct Player {
 
     void attackEnemy();
     void useHealing(int index);
+    void showWeapons();
+    void showHealings();
 };
 
 #endif
