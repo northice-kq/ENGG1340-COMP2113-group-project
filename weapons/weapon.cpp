@@ -10,12 +10,14 @@ Weapon::Weapon(std::string name, std::string description, int baseDamage,
 
 void Weapon::printDescription() {
     std::cout << "Name      : " << name << std::endl;
-    std::cout << "Level     : " << level << std::endl;
-    std::cout << "Durability: ";
-    if (durability == INT_MAX) {
-        std::cout << "Infinite" << std::endl;
-    } else {
-        std::cout << durability << std::endl;
+    if (name != "Fist") {
+        std::cout << "Level     : " << level << std::endl;
+        std::cout << "Durability: ";
+        if (durability == INT_MAX) {
+            std::cout << "Infinite" << std::endl;
+        } else {
+            std::cout << durability << std::endl;
+        }
     }
     std::cout << description << std::endl;
 }
@@ -36,8 +38,10 @@ Fist::Fist()
 
 int Fist::useWeapon() {
     int damage = baseDamage;
-    if (rand() % critHitRate == 0)
+    if (rand() % critHitRate == 0) {
         damage *= 2;
+        std::cout << "Critical hit!" << std::endl;
+    }
     std::cout << "Dealt damage: " << damage << std::endl;
     return damage;
 }
@@ -46,14 +50,18 @@ Sword::Sword()
     : Weapon("Sword", "A durable and reliable weapon!", 20, 100, 20) {}
 
 int Sword::useWeapon() {
-    if (durability == 0)
+    if (durability == 0) {
+        std::cout << "Your weapon has no durability!" << std::endl;
         return 0;
+    }
     // upgrading a level increases 20% damage
     // reduce 1 damage per 20 use
     int damage = baseDamage + baseDamage * (level - 1) / 5;
     damage -= (100 - durability) / 20;
-    if (rand() % critHitRate == 0)
+    if (rand() % critHitRate == 0) {
         damage *= 2;
+        std::cout << "Critical hit!" << std::endl;
+    }
     durability--;
     std::cout << "Dealt damage: " << damage << std::endl;
     return damage;
@@ -64,10 +72,16 @@ Axe::Axe()
              30, 15, 5) {}
 
 int Axe::useWeapon() {
+    if (durability == 0) {
+        std::cout << "Your weapon has no durability!" << std::endl;
+        return 0;
+    }
     // upgrading a level increases 20% damage
     int damage = baseDamage + baseDamage * (level - 1) / 5;
-    if (rand() % critHitRate == 0)
+    if (rand() % critHitRate == 0) {
         damage *= 2;
+        std::cout << "Critical hit!" << std::endl;
+    }
     durability--;
     std::cout << "Dealt damage: " << damage << std::endl;
     return damage;
@@ -78,11 +92,11 @@ CalculatorGun::CalculatorGun()
              INT_MAX, -1) {}
 
 int CalculatorGun::useWeapon() {
-    // shoots out 5 random numbers from (0 + level) to (9 + level)
+    // shoots out 5 random numbers from (0 + level) to (7 + level)
     int damage = baseDamage;
     std::cout << "Shooted numbers:";
     for (int i = 0; i < 5; i++) {
-        int x = (rand() % 10 + level);
+        int x = (rand() % 8 + level);
         std::cout << ' ' << x;
         damage += x;
     }
