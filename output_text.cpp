@@ -25,10 +25,10 @@ void writer_print(const string& text, int char_delay, int dot_delay, bool is_dot
         // Get the last character of the string
         if (!text.empty()) {
             char last_char = text.back();
-            if (last_char == '!' || last_char == '?'|| last_char == ')') {
+            if (last_char == '!' || last_char == '?' || last_char == ')') {
                 this_thread::sleep_for(chrono::milliseconds(200));
                 // Make sure we do not create dots if there are other punctuations
-                skip_dots = true; // skip dots as we do not need them when there are ! or ?
+                skip_dots = true; // skip dots as we do not need tem when there are ! or ?
             }
         }
         if (!skip_dots) {
@@ -51,7 +51,7 @@ void press_enter_to_continue() {
 void scene_break() {
     // Use writer_print with faster character speed for the divider
     // no dots
-    writer_print("********************", 25, 200, false);
+    writer_print("********************",false, 25, 200);
 
     // Extra pause after the divider fades in
     this_thread::sleep_for(chrono::milliseconds(200));
