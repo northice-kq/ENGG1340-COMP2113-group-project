@@ -9,10 +9,14 @@ int main() {
     v.emplace_back(new Fist()); // Fist should be the default weapon and should
                                 // not be removed
     v[0]->printDescription();
-    v.emplace_back(new Sword()); // add a new weapon
+    v[0]->useWeapon();
+    std::cout << std::endl;
+    v.emplace_back(new CalculatorGun()); // add a new weapon
     v[1]->printDescription();
-    std::cout << "using the sword" << std::endl;
-    std::cout << "sword damage: " << v[1]->useWeapon() << std::endl;
-    std::cout << "after using the sword" << std::endl;
+    v[1]->useWeapon();
+    v[1]->upgrade();
+    std::cout << std::endl;
     v[1]->printDescription();
+    v[1]->useWeapon();
+    v[1]->useWeapon();
 }
