@@ -16,6 +16,8 @@ Room::Room(Room_Type room_type, int x_co, int y_co) {
     revealed = false;
     key_collected = false;
     chest_looted = false;
+    start_revisited = false;
+    start_event_triggered = false;
 
     if (room_type == START) {
         revealed = true;
@@ -55,6 +57,49 @@ vector<vector<Room>> assign_rooms(int size) {
     // grid[y][x] now accesses the Room at row y, column x
     // grid[0][0].type is always START
     return grid;
+}
+
+// What it does:
+//              On first entry, plays the game intro and sets the tone
+//              On first return, triggers a creepy atmospheric event. all later returns are then brief
+void enter_start_room(Room& room) {
+    scene_break();
+
+    // for first visit (game intro)
+    if (!room.start_revisited) {
+        room.start_revisited = true;
+
+        writer_print("You wake up on cold, damp stone");
+        writer_print("Your head throbs. You don't remember how you got here");
+        writer_print("The room is small. A heavy iron door stands to the north. It's locked");
+        this_thread::sleep_for(chrono::milliseconds(1500));
+        writer_print("Three keyholes are carved into its frame");
+        writer_print("You need to find three keys to escape this dungeon");
+        this_thread::sleep_for(chrono::milliseconds(1000));
+        writer_print("Somewhere in the darkness, something stirs");
+        press_enter_to_continue();
+        return;
+    }
+
+    // revisit with creepy message
+    if (!room.start_event_triggered) {
+        room.start_event_triggered = true;
+
+        writer_print("You return to the room where you first awoke");
+        writer_print("Something is wrong");
+        writer_print("Scratches mark the stone floor where there were none before");
+        writer_print("They lead from the center of the room... to the door");
+        this_thread::sleep_for(chrono::milliseconds(1000));
+        writer_print("Something... or someone was dragged. Recently");
+        this_thread::sleep_for(chrono::milliseconds(1000));
+        writer_print("You are not alone here");
+        press_enter_to_continue();
+        return;
+    }
+
+    // for all later returns
+    writer_print("The room is as you left it. Cold and silent");
+    writer_print("The scratches are still there. Nothing else has changed");
 }
 
 // What it does: When the player enters an empty room, prints a random
