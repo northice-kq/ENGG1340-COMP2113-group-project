@@ -19,7 +19,8 @@ enum Room_Type {
     NOTHING,
     KEY,
     CHEST,
-    ENEMY
+    ENEMY,
+    ESCAPE
 };
 
 // What it does: Represents a single room in the dungeon grid
@@ -49,7 +50,7 @@ struct Room {
 
 // what it does: Randomly assigns a Room_Type to every cell in the grid.
 //              START at (0,0), then 3 KEY, 6 CHEST, 10 ENEMY, 5 NOTHING
-//              using shffule for (x,y)
+//              using shuffle for (x,y)
 //              rreturns a 2D vector of Room struct
 vector<vector<Room>> assign_rooms(int size);
 
@@ -57,6 +58,12 @@ vector<vector<Room>> assign_rooms(int size);
 // What it does: Handles the player entering every different types of rooms
 void enter_start_room(Room& room);
 void enter_empty_room(Room& room);
-void enter_key_room(Room& room, int& keys_collected);
+void enter_key_room(Room& room, int& keys_collected, vector<vector<Room>>& grid, int size, int player_x, int player_y);
 void enter_chest_room(Room& room, vector<Weapon*>& weapons, vector<Healing*>& healings, int& player_attack, int& player_hp, int& player_max_hp);
+void enter_escape_room(Room& room);
+
+// What it does: generate escape room when a player obtained 3 keys.
+//              the square that the player currently on, the starting square, the adjacent squares cannot be the escape room
+//              output modifies the grid
+void reveal_escape_room(vector<vector<Room>>& grid, int size, int player_x, int player_y);
 #endif
