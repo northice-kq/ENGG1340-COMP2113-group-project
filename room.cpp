@@ -147,7 +147,7 @@ void enter_empty_room(Room& room) {
 //              if not, marks it collected,
 //              At 3 keys, prints a special message signaling the escape room is now available and past to func
 
-void enter_key_room(Room& room, int& keys_collected) {
+void enter_key_room(Room& room, int& keys_collected, vector<vector<Room>>& grid, int size, int player_x, int player_y) {
     room.revealed = true;
     scene_break();
     if (room.key_collected) {
@@ -199,10 +199,7 @@ void enter_key_room(Room& room, int& keys_collected) {
         writer_print("One more key remains hidden in the dungeon");
     }
     else if (keys_collected == 3) {
-        scene_break();
-        writer_print("All three keys are now in your possession");
-        writer_print("A distant grinding of stone echoes through the halls");
-        writer_print("Somewhere... a new passage has opened");
+        reveal_escape_room(grid, size, player_x, player_y);
     }
 }
 
@@ -439,4 +436,52 @@ void enter_chest_room(Room& room, vector<Weapon*>& weapons, vector<Healing*>& he
     room.chest_looted = true;
     press_enter_to_continue();
 }
+// What it does: generate escape room when a player obtained 3 keys.
+//              the square that the player currently on, the starting square, the adjacent squares cannot be the escape room
+//              output modifies the grid
+void reveal_escape_room(vector<vector<Room>>& grid, int size, int player_x, int player_y) {
+    // build list of valid coordinates, exc. start & current & adjacent square
+    vector<pair<int, int>> valid;
+    for (int y = 0; y < size; y++) {
+        for (int x = 0; x < size; x++) {
+            // Skip starting sq
+            if (x == 0 && y == 0) continue;
 
+            // skip player position
+            if (x == player_x && y == player_y) continue;
+
+            // skip adjacent rooms
+            if (x == player_x && y == player_y - 1) continue; // up
+            if (x == player_x && y == player_y + 1) continue; // down
+            if (x == player_x - 1 && y == player_y) continue; // left
+            if (x == player_x + 1 && y == player_y) continue; // right
+
+            valid.push_back({x, y});
+        }
+    }
+    // pick a random valid room
+    int idx = rand() % valid.size();
+    int escape_x = valid[idx].first;
+    int escape_y = valid[idx].second;
+
+    // Convert to ESCAPE room
+    grid[escape_y][escape_x].type = ESCAPE;
+    grid[escape_y][escape_x].revealed = false;   // player must discover it
+
+    // narrativee
+    scene_break();
+    writer_print("All three keys are now in your possession");
+    writer_print("A distant grinding of stone echoes through the halls");
+    writer_print("Somewhere... a new passage has opened. The map marked something new");
+    writer_print("Find it. Escape while you still can");
+    press_enter_to_continue();
+}
+
+
+void enter_escape_room(Room& room) {
+    room.revealed = true;
+    scene_break();
+    writer_print("You push open the heavy door");
+    writer_print("Cold fresh air hits your face");
+    writer_print("Congratulations. You are free");
+}
