@@ -33,6 +33,8 @@ struct Room {
     bool revealed;          // true if player has visited this room
     bool key_collected;     // true if the key in this room has been taken
     bool chest_looted;      // true if the chest in this room has been opened
+    bool start_revisited;   // true if player goes back to start (0,0)
+    bool start_event_triggered;   // true after the creepy return event plays
 
     // What it does: Constructs a Room with the given type and coordinates.
 
@@ -53,6 +55,7 @@ vector<vector<Room>> assign_rooms(int size);
 
 
 // What it does: Handles the player entering every different types of rooms
+void enter_start_room(Room& room);
 void enter_empty_room(Room& room);
 void enter_key_room(Room& room, int& keys_collected);
 void enter_chest_room(Room& room, vector<Weapon*>& weapons, vector<Healing*>& healings, int& player_attack, int& player_hp, int& player_max_hp);
