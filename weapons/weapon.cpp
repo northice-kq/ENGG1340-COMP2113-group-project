@@ -22,13 +22,14 @@ void Weapon::printDescription() {
     std::cout << description << std::endl;
 }
 
-bool Weapon::upgrade() {
+bool Weapon::upgrade(int n) {
     if (level >= 5 || name == "Fist") {
-        return false;
+        return false; // cannot upgrade
     } else {
-        level++;
-        critHitRate--;
-        return true;
+        int increase = (n < 5 - level ? n : 5 - level);
+        level += increase;
+        critHitRate -= increase;
+        return true; // successful upgrade
     }
 }
 

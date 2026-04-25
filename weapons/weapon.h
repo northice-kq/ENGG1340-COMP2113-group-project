@@ -15,7 +15,7 @@ struct Weapon {
     Weapon(std::string name, std::string description, int baseDamage,
            int durability, int critHitRate);
     void printDescription();
-    bool upgrade();
+    bool upgrade(int n);
     virtual int useWeapon() = 0;
 };
 

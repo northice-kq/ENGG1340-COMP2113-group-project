@@ -14,7 +14,7 @@ int main() {
     v.emplace_back(new CalculatorGun()); // add a new weapon
     v[1]->printDescription();
     v[1]->useWeapon();
-    v[1]->upgrade();
+    v[1]->upgrade(1);
     std::cout << std::endl;
     v[1]->printDescription();
     v[1]->useWeapon();
