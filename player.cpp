@@ -1,13 +1,16 @@
 #include "player.h"
 #include <iostream>
-void Player::attackEnemy() {
+int Player::attackEnemy() {
     if (weapons.empty() || current_weapon >= weapons.size()) {
-    std::cout << "No valid weapon!\n";
-    return;
+        std::cout << "No valid weapon!\n";
+        return 0;
     }
+
     int damage = weapons[current_weapon]->useWeapon();
     damage += attack;
+
     std::cout << "Player deal " << damage << " damage\n";
+    return damage; 
 }
 void Player::useHealing(int index) {
     if (healings.empty()) {
@@ -31,6 +34,6 @@ void Player::showWeapons() {
 void Player::showHealings() {
     std::cout << "=== Healings ===\n";
     for (int i = 0; i < healings.size(); i++) {
-        std::cout << i << ": " << healings[i]->name << << " (x" << healings[i]->count << ")\n";
+        std::cout << i << ": " << healings[i]->name << " (x" << healings[i]->count << ")\n";
     }
 }
