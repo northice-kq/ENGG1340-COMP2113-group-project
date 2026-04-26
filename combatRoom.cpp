@@ -12,7 +12,7 @@ void combatRoom(Player &p1, Enemy* currentEnemy) {
     while (p1.hp > 0 && currentEnemy->hp > 0) {
         // player turn
         cout << "\n[Your Turn]" << endl;
-        cout << "1. Attack  2. Use potion" << endl;
+        cout << "1. Attack  2. Heal" << endl;
         int choice = 0;
         
         while (choice != 1){
