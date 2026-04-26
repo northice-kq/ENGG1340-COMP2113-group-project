@@ -39,4 +39,9 @@ struct CalculatorGun : Weapon {
     int useWeapon() override;
 };
 
+struct Railgun : Weapon {
+    Railgun();
+    int useWeapon() override;
+};
+
 #endif
