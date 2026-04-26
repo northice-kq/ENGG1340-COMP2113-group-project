@@ -26,6 +26,11 @@ void combatRoom(Player &p1, Enemy* currentEnemy) {
                 p1.showWeapons();
                 int weaponchoice;
                 cin >> weaponchoice;
+                if (!(cin >> weaponchoice)) {
+                    cout << "Please enter a number." << endl;
+                    cin.clear(); cin.ignore(1000, '\n');
+                    continue;
+                }
                 p1.weaponcnt = weaponchoice;
                 p1.attackEnemy();
                 if (!(currentEnemy->attemptDodge())){
@@ -36,6 +41,11 @@ void combatRoom(Player &p1, Enemy* currentEnemy) {
                 p1.showHealings();
                 int healingchoice;
                 cin >> healingchoice;
+                if (!(cin >> healingchoice)) {
+                    cout << "Please enter a number." << endl;
+                    cin.clear(); cin.ignore(1000, '\n');
+                    continue;
+                }
                 p1.useHealing(healingchoice);
             }
             else{
@@ -58,7 +68,7 @@ void combatRoom(Player &p1, Enemy* currentEnemy) {
             cout << "A mage is attacking you, select a lane from 1 - 3";
             while (lanechoice < 1 || lanechoice > 3){
                 cin >> lanechoice;
-                if (!(cin >> choice)) {
+                if (!(cin >> lanechoice)) {
                     cout << "Please enter a number." << endl;
                     cin.clear(); cin.ignore(1000, '\n');
                     continue;
