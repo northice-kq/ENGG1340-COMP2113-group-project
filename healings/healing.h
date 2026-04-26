@@ -6,26 +6,25 @@
 struct Healing {
     std::string name;
     std::string description;
-    int count = 0;
     Healing(std::string name, std::string description);
     void printDescription() const;
-    bool healPlayer(int& HP);
-    virtual int getFinalHP(int HP) const = 0;
+    bool healPlayer(int& HP, int maxHP);
+    virtual int getFinalHP(int HP, int maxHP) const = 0;
 };
 
 struct firstAidKit : Healing {
     firstAidKit();
-    virtual int getFinalHP(int HP) const override;
+    virtual int getFinalHP(int HP, int maxHP) const override;
 };
 
 struct bandage : Healing {
     bandage();
-    virtual int getFinalHP(int HP) const override;
+    virtual int getFinalHP(int HP, int maxHP) const override;
 };
 
 struct medKit : Healing {
     medKit();
-    virtual int getFinalHP(int HP) const override;
+    virtual int getFinalHP(int HP, int maxHP) const override;
 };
 
 #endif

@@ -43,7 +43,6 @@ int Fist::useWeapon() {
         damage *= 2;
         std::cout << "Critical hit!" << std::endl;
     }
-    std::cout << "Dealt damage: " << damage << std::endl;
     return damage;
 }
 
@@ -64,7 +63,6 @@ int Sword::useWeapon() {
         std::cout << "Critical hit!" << std::endl;
     }
     durability--;
-    std::cout << "Dealt damage: " << damage << std::endl;
     return damage;
 }
 
@@ -84,7 +82,6 @@ int Axe::useWeapon() {
         std::cout << "Critical hit!" << std::endl;
     }
     durability--;
-    std::cout << "Dealt damage: " << damage << std::endl;
     return damage;
 }
 
@@ -101,6 +98,5 @@ int CalculatorGun::useWeapon() {
         std::cout << ' ' << x;
         damage += x;
     }
-    std::cout << std::endl << "Dealt damage: " << damage << std::endl;
     return damage;
 }

@@ -68,6 +68,5 @@ int Railgun::useWeapon() {
     std::cout << "Your railgun has charged to power level " << bonus
               << std::endl;
     damage += bonus * 3;
-    std::cout << "Dealt damage: " << damage << std::endl;
     return damage;
 }
