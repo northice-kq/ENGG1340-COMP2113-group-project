@@ -15,7 +15,7 @@ struct Player {
 
     int current_weapon = 0;
 
-    void attackEnemy();
+    int attackEnemy();
     void useHealing(int index);
     void showWeapons();
     void showHealings();
