@@ -1,20 +1,18 @@
-#include "entities.h"
+#include "combatRoom.h"
 #include <iostream>
 #include <cstdlib>
 
 using namespace std;
 
-void combatRoom(player &p1, Enemy* Enemy);
-
 int main(int argc, const char * argv[]) {
     srand(time_t(0));
-    player p1 = {10,2};
+    Player p1 = {10,2};
     Enemy* Enemy = generateEnemy(p1.killcnt);
-    combatRoom(p1, Enemy);
+    combatRoom(p1, *Enemy);
     return 0;
 }
 
-void combatRoom(player &p1, Enemy* currentEnemy) {
+void combatRoom(Player &p1, Enemy* currentEnemy) {
     cout << "\n--- BATTLE START ---" << endl;
     cout << "You encountered an enemy with " << currentEnemy->hp << " HP!" << endl;
 
@@ -23,15 +21,36 @@ void combatRoom(player &p1, Enemy* currentEnemy) {
         // player turn
         cout << "\n[Your Turn]" << endl;
         cout << "1. Attack  2. Use potion" << endl;
-        int choice;
-        cin >> choice;
-
-        if (choice == 1) {
-            player.showWeapons();
-            
-        } else {
-            cout << "You brace yourself for the next hit." << endl;
+        int choice = 0;
+        
+        while (choice != 1){
+            cin >> choice;
+            if (!(cin >> choice)) {
+                cout << "Please enter a number." << endl;
+                cin.clear(); cin.ignore(1000, '\n');
+                continue;
+            }
+            if (choice == 1) {
+                //p1.showWeapons();
+                int weaponchoice;
+                cin >> weaponchoice;
+                //p1.weaponcnt = weaponchoice;
+                //p1.attackEnemy();
+                if (!(currentEnemy->attemptDodge())){
+                    currentEnemy->hp -= p1.attack;
+                }
+                
+            } else if (choice == 2){
+                //p1.showHealings();
+                int healingchoice;
+                cin >> healingchoice;
+                //p1.useHealing(healingchoice);
+            }
+            else{
+                cout << "Invalid input, please try again." << endl;
+            }
         }
+        
 
         // check if died
         if (currentEnemy->hp <= 0) {
@@ -42,9 +61,26 @@ void combatRoom(player &p1, Enemy* currentEnemy) {
 
         // enemy turn
         cout << "\n[Enemy's Turn]" << endl;
-        currentEnemy->attackAction();
-        
-        p1.hp -= currentEnemy->attack;
+        if (currentEnemy->name == "Mage"){
+            int lanechoice = 0;
+            cout << "A mage is attacking you, select a lane from 1 - 3";
+            while (lanechoice < 1 || lanechoice > 3){
+                cin >> lanechoice;
+                if (!(cin >> choice)) {
+                    cout << "Please enter a number." << endl;
+                    cin.clear(); cin.ignore(1000, '\n');
+                    continue;
+                }
+                if (lanechoice < 1 || lanechoice > 3) cout << "wrong input, try again." << endl;
+            }
+            p1.hp -= currentEnemy->attackAction(lanechoice);
+        }
+        else if (currentEnemy->name == "Assassin"){
+            p1.hp -= currentEnemy->attackAction();
+        }
+        else if (currentEnemy->name == "Standard"){
+            p1.hp -= currentEnemy->attackAction();
+        }
         cout << "Your HP: " << p1.hp << endl;
 
         // check if player died
