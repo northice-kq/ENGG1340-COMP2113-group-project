@@ -27,7 +27,7 @@ void combatRoom(player &p1, Enemy* currentEnemy) {
         cin >> choice;
 
         if (choice == 1) {
-            //player.showWeapons();
+            player.showWeapons();
             
         } else {
             cout << "You brace yourself for the next hit." << endl;
