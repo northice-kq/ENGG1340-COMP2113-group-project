@@ -37,3 +37,9 @@ void Player::showHealings() {
         std::cout << i << ": " << healings[i]->name << " (x" << healings[i]->count << ")\n";
     }
 }
+void Player::showStats() {
+    std::cout << "HP: " << HP << "\n";
+    std::cout << "Attack: " << attack << "\n";
+    std::cout << "Keys: " << key_count << "\n";
+}
+    
