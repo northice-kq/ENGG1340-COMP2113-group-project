@@ -31,7 +31,7 @@ void combatRoom(Player &p1, Enemy* currentEnemy) {
                     cin.clear(); cin.ignore(1000, '\n');
                     continue;
                 }
-                p1.weaponcnt = weaponchoice;
+                p1.current_weapon = weaponchoice;
                 p1.attackEnemy();
                 if (!(currentEnemy->attemptDodge())){
                     currentEnemy->hp -= p1.attack;
