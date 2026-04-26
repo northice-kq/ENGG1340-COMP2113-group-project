@@ -1,7 +1,7 @@
 #ifndef ENTITIES_H
 #define ENTITIES_H
 
-#include "player.h"
+#include "../player/player.h"
 #include <iostream>
 #include <string>
 

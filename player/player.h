@@ -10,6 +10,7 @@ struct Player {
     int maxHP;
     int attack;
     int key_count;
+    int kill_count;
     int weaponCap;
     int healingCap;
     Weapon* current_weapon;

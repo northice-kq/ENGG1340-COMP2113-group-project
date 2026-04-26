@@ -1,4 +1,6 @@
 #include "combatRoom.h"
+#include "../player/player.h"
+#include "../entities/entities.h"
 #include <iostream>
 #include <cstdlib>
 
@@ -9,7 +11,7 @@ void combatRoom(Player &p1, Enemy* currentEnemy) {
     cout << "You encountered an enemy with " << currentEnemy->hp << " HP!" << endl;
 
     // condition
-    while (p1.hp > 0 && currentEnemy->hp > 0) {
+    while (p1.HP > 0 && currentEnemy->hp > 0) {
         // player turn
         cout << "\n[Your Turn]" << endl;
         cout << "1. Attack  2. Heal" << endl;
@@ -31,7 +33,7 @@ void combatRoom(Player &p1, Enemy* currentEnemy) {
                     cin.clear(); cin.ignore(1000, '\n');
                     continue;
                 }
-                p1.current_weapon = weaponchoice;
+                p1.current_weapon = p1.weaponsInv[weaponchoice];
                 p1.attackEnemy();
                 if (!(currentEnemy->attemptDodge())){
                     currentEnemy->hp -= p1.attack;
@@ -57,7 +59,7 @@ void combatRoom(Player &p1, Enemy* currentEnemy) {
         // check if died
         if (currentEnemy->hp <= 0) {
             cout << "\nVictory! You defeated the enemy." << endl;
-            p1.killcnt++;
+            p1.kill_count++;
             return; // end battle
         }
 
@@ -75,18 +77,18 @@ void combatRoom(Player &p1, Enemy* currentEnemy) {
                 }
                 if (lanechoice < 1 || lanechoice > 3) cout << "wrong input, try again." << endl;
             }
-            p1.hp -= currentEnemy->attackAction(lanechoice);
+            p1.HP -= currentEnemy->attackAction(lanechoice);
         }
         else if (currentEnemy->name == "Assassin"){
-            p1.hp -= currentEnemy->attackAction();
+            p1.HP -= currentEnemy->attackAction();
         }
         else if (currentEnemy->name == "Standard"){
-            p1.hp -= currentEnemy->attackAction();
+            p1.HP -= currentEnemy->attackAction();
         }
-        cout << "Your HP: " << p1.hp << endl;
+        cout << "Your HP: " << p1.HP << endl;
 
         // check if player died
-        if (p1.hp <= 0) {
+        if (p1.HP <= 0) {
             cout << "Game Over... You died in the dungeon." << endl;
         }
     }

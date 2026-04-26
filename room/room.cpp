@@ -1,5 +1,5 @@
 #include "room.h"
-#include "output_text.h"
+#include "../output_text/output_text.h"
 #include <iostream>
 #include <thread>
 #include <chrono>
@@ -302,7 +302,7 @@ void enter_chest_room(Room& room, vector<Weapon*>& weapons, vector<Healing*>& he
             writer_print("You found a Med Kit!");
             writer_print("Fully restores your health");
         }
-        found->count++;
+        found->count++; // please fix this by directly calling the Player::pickupHealings function
         room.chest_looted = true;
         press_enter_to_continue();
         return;

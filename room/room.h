@@ -1,7 +1,7 @@
 #ifndef ROOM_H
 #define ROOM_H
-#include "weapon.h"
-#include "healing.h"
+#include "../weapons/weapon.h"
+#include "../healings/healing.h"
 #include <vector>
 using namespace std;
 // What it does: Defines the Room_Type enum and Room struct for the dungeon crawler.
