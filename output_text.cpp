@@ -6,7 +6,7 @@ using namespace std;
 
 //  Please read 'output_text.h' for description of teh following functions
 
-void writer_print(const string& text, int char_delay, int dot_delay, bool is_dots) {
+void writer_print(const string& text, bool is_dots, int char_delay, int dot_delay) {
     // Print each character one at a time, flushing after each
     for (char c : text) {
         cout << c << flush;
@@ -37,7 +37,7 @@ void writer_print(const string& text, int char_delay, int dot_delay, bool is_dot
                 this_thread::sleep_for(chrono::milliseconds(dot_delay));
             }
         }
-        this_thread::sleep_for(chrono::milliseconds(300)); // extra pause for sentence break
+        this_thread::sleep_for(chrono::milliseconds(450)); // extra pause for sentence break
     }
 
     cout << "\n";
