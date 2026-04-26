@@ -4,14 +4,6 @@
 
 using namespace std;
 
-int main(int argc, const char * argv[]) {
-    srand(time_t(0));
-    Player p1 = {10,2};
-    Enemy* Enemy = generateEnemy(p1.killcnt);
-    combatRoom(p1, *Enemy);
-    return 0;
-}
-
 void combatRoom(Player &p1, Enemy* currentEnemy) {
     cout << "\n--- BATTLE START ---" << endl;
     cout << "You encountered an enemy with " << currentEnemy->hp << " HP!" << endl;
@@ -31,20 +23,20 @@ void combatRoom(Player &p1, Enemy* currentEnemy) {
                 continue;
             }
             if (choice == 1) {
-                //p1.showWeapons();
+                p1.showWeapons();
                 int weaponchoice;
                 cin >> weaponchoice;
-                //p1.weaponcnt = weaponchoice;
-                //p1.attackEnemy();
+                p1.weaponcnt = weaponchoice;
+                p1.attackEnemy();
                 if (!(currentEnemy->attemptDodge())){
                     currentEnemy->hp -= p1.attack;
                 }
                 
             } else if (choice == 2){
-                //p1.showHealings();
+                p1.showHealings();
                 int healingchoice;
                 cin >> healingchoice;
-                //p1.useHealing(healingchoice);
+                p1.useHealing(healingchoice);
             }
             else{
                 cout << "Invalid input, please try again." << endl;
