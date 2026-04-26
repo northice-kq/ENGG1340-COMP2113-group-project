@@ -16,12 +16,14 @@ using namespace std;
 //              trailing-off dramatic effect. can be used for room descriptions,
 //               dialogue, story moments, and atmospheric narration.
 // Inputs:  text (const string&) - the message to display
-//          char_delay (int) - milliseconds delay between each character
+//          char_delay - milliseconds delay between each character
 //                                 (default 40ms for normal pace)
-//          dot_delay (int)  - milliseconds delay between each dot
-//                                 (default 200ms for dramatic trailing)
+//          dot_delay    - milliseconds delay between each dot
+//                                  (default 200ms for dramatic trailing and enhance readability)
 
-void writer_print(const string& text, int char_delay = 40, int dot_delay = 200, bool is_dots = true);
+//          NOTE!!!! To use the default settings, omit the last three perimeters
+
+void writer_print(const string& text, bool is_dots = true, int char_delay = 40, int dot_delay = 200);
 
 //
 // What it does: waits for the player to press Enter before continuing.
