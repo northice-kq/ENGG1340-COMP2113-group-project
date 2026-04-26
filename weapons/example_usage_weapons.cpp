@@ -1,4 +1,4 @@
-#include "weapons/weapon.h"
+#include "weapon.h"
 #include <iostream>
 #include <vector>
 int main() {

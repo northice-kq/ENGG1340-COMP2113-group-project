@@ -1,21 +1,26 @@
 #ifndef PLAYER_H
 #define PLAYER_H
 
+#include "../healings/healing.h"
+#include "../weapons/weapon.h"
 #include <vector>
-#include "weapons/weapon.h"
-#include "healings/healing.h"
 
 struct Player {
-    int HP = 100;
-    int attack = 2;
-    int key_count = 0;
+    int HP;
+    int attack;
+    int key_count;
+    int weaponCap;
+    int healingCap;
+    Weapon* current_weapon;
+    std::vector<Weapon*> weaponsInv;
+    std::vector<Healing*> healingsInv;
 
-    std::vector<Weapon*> weapons;
-    std::vector<Healing*> healings;
-
-    int current_weapon = 0;
-
+    Player(bool is_hard_difficulty);
+    void pickupWeapon(Weapon* weapon);
+    void discardWeapon(int index);
     int attackEnemy();
+    void pickupHealings(Healing* healing);
+    void discardHealings(int index);
     void useHealing(int index);
     void showWeapons();
     void showHealings();

@@ -1,4 +1,4 @@
-#include "healings/healing.h"
+#include "healing.h"
 #include <iostream>
 #include <map>
 #include <string>
