@@ -109,8 +109,8 @@ void combatRoom(Player &p1, Enemy* currentEnemy, bool isHard) {
         else {
             int roll = rand() % 100;
             if (roll < (isHard? 30:50)){
-                //if (!Dodge()) p1.HP -= currentEnemy->attackAction(lane);
-                p1.HP -= currentEnemy->attackAction(lane);
+                if (!Dodge()) p1.HP -= currentEnemy->attackAction(lane);
+                //p1.HP -= currentEnemy->attackAction(lane);
                 this_thread::sleep_for(chrono::milliseconds(500));
             }
             else p1.HP -= currentEnemy->attackAction(lane);
