@@ -1,15 +1,19 @@
 #include "Map.h"
-#include "room.h"
 #include <iostream>
-//#include <cstdlib>   // for system("clear") if you want; optional
+#include <cstdlib>   // for system("clear") if you want; optional
 
 using namespace std;
 
 // Constructor
+// creating default dungeon map - @north_ice
 Map::Map(bool is_hard_difficulty) :
     is_hard_difficulty(is_hard_difficulty),
     size(is_hard_difficulty ? 7 : 5),
-    grid(assign_rooms(size)), player(Player(is_hard_difficulty)) {
+    grid(assign_rooms(size)),
+    player(Player(is_hard_difficulty)),
+    escapeX(-1),
+    escapeY(-1),
+    escapeRevealed(false) {
 }
 
 // Destructor – vector cleans itself, but included for completeness
@@ -35,6 +39,10 @@ void Map::printMap() const {
         for (int x = 0; x < size; x++) {
             if (player.playerX == x && player.playerY == y) {
                 cout << "[@] ";
+            }
+            // Show escape room if revealed - @north_ice
+            else if (escapeRevealed && x == escapeX && y == escapeY) {
+                cout << "[X] ";
             }
             else if (grid[y][x].revealed) {
                 cout << "[.] ";
@@ -86,4 +94,11 @@ bool Map::movePlayer(string direction) {
 bool Map::isGameOver() const {
     // For now, game never ends. Later: if player reaches a special tile
     return false;
+}
+
+// get the escape room info - @north_ice
+void Map::setEscapeRoom(int x, int y) {
+    escapeX = x;
+    escapeY = y;
+    escapeRevealed = true;
 }
