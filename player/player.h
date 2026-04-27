@@ -6,6 +6,7 @@
 #include <vector>
 
 struct Player {
+    int playerX, playerY;
     int HP;
     int maxHP;
     int playerAttack;

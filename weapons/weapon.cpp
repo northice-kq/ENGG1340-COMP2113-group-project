@@ -82,7 +82,7 @@ int CalculatorGun::useWeapon() {
     int damage = baseDamage;
     std::cout << "Shooted numbers:";
     for (int i = 0; i < 5; i++) {
-        int x = rand() % 8;
+        int x = rand() % 8 + 1;
         std::cout << ' ' << x;
         damage += x;
     }

@@ -1,26 +1,24 @@
 #ifndef MAP_H
 #define MAP_H
-
+// this file should be called the game engine
+#include "../room/room.h"
+#include "../player/player.h"
 #include <vector>
 #include <string>
 
-using namespace std;
-
-class Map {
-private:
+struct Map {
+    bool is_hard_difficulty;
     int size;                       // grid size (5)
-    vector<vector<bool>> explored;  // track visited cells
-    int playerX, playerY;           // current position
+    std::vector<std::vector<Room>> grid;  // track visited cells
+    Player player;           // current position
 
-public:
-    Map(int gridSize = 5);          // constructor, creates 5x5 grid
+    Map(bool is_hard_difficulty); // constructor
+    Map(std::string filepath);    // restore game from text file (implement later)
     ~Map();                         // destructor (not strictly needed but good habit)
 
     void printMap() const;          // display the grid with @ . ?
-    bool movePlayer(string direction); // returns true if move valid, false otherwise
+    bool movePlayer(std::string direction); // returns true if move valid, false otherwise
     bool isGameOver() const;        // placeholder for later (e.g., exit found)
-    int getPlayerX() const { return playerX; }
-    int getPlayerY() const { return playerY; }
 };
 
 #endif

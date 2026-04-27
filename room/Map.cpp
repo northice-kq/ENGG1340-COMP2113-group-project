@@ -1,15 +1,15 @@
 #include "Map.h"
+#include "room.h"
 #include <iostream>
-#include <cstdlib>   // for system("clear") if you want; optional
+//#include <cstdlib>   // for system("clear") if you want; optional
 
 using namespace std;
 
 // Constructor
-Map::Map(int gridSize) : size(gridSize), playerX(0), playerY(0) {
-    // Create a 2D vector of bool, all false initially
-    explored.resize(size, vector<bool>(size, false));
-    // Mark starting cell (0,0) as explored
-    explored[playerY][playerX] = true;
+Map::Map(bool is_hard_difficulty) :
+    is_hard_difficulty(is_hard_difficulty),
+    size(is_hard_difficulty ? 7 : 5),
+    grid(assign_rooms(size)), player(Player(is_hard_difficulty)) {
 }
 
 // Destructor – vector cleans itself, but included for completeness
@@ -33,10 +33,10 @@ void Map::printMap() const {
     for (int y = 0; y < size; y++) {
         cout << " " << y << " ";
         for (int x = 0; x < size; x++) {
-            if (playerX == x && playerY == y) {
+            if (player.playerX == x && player.playerY == y) {
                 cout << "[@] ";
             }
-            else if (explored[y][x]) {
+            else if (grid[y][x].revealed) {
                 cout << "[.] ";
             }
             else {
@@ -49,8 +49,8 @@ void Map::printMap() const {
 
 // Move the player. Direction: "up", "down", "left", "right"
 bool Map::movePlayer(string direction) {
-    int newX = playerX;
-    int newY = playerY;
+    int newX = player.playerX;
+    int newY = player.playerY;
 
     if (direction == "up" || direction == "Up" || direction == "UP" || direction == "u") {
         newY--;
@@ -76,9 +76,9 @@ bool Map::movePlayer(string direction) {
     }
 
     // Valid move: update position and mark new cell as explored
-    playerX = newX;
-    playerY = newY;
-    explored[playerY][playerX] = true;
+    player.playerX = newX;
+    player.playerY = newY;
+    grid[newY][newX].revealed = true;
     return true;
 }
 
