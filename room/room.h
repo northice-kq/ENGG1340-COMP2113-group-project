@@ -4,16 +4,18 @@
 #include "../weapons/weapon.h"
 #include "../healings/healing.h"
 #include <vector>
+#include <vector>
 using namespace std;
 // What it does: Defines the Room_Type enum and Room struct for the dungeon crawler.
 //              Each room has a type, coordinate position, and flags to track
 
-// What it does: Defines the possible types of rooms in the grid
-//              START    - player's beginning position, always at (0,0)
-//              NOTHING  - empty room
-//              KEY      - contains one of the three keys needed to escape
-//              CHEST    - contains random loot (potion, weapon, armor)
-//              ENEMY    - triggers combat encounter
+/* What it does: Defines the possible types of rooms in the grid
+                START    - player's beginning position, always at (0,0)
+                NOTHING  - empty room
+                KEY      - contains one of the three keys needed to escape
+                CHEST    - contains random loot (potion, weapon, armor)
+                ENEMY    - triggers combat encounter
+                ESCAPE  - escape room reveal */
 
 enum Room_Type {
     START,
@@ -61,27 +63,23 @@ vector<vector<Room>> assign_rooms(int size);
 // What it does: Handles the player entering every different types of rooms
 void enter_start_room(Room& room, Player& player);
 void enter_empty_room(Room& room, Player& player);
-void enter_key_room(Room& room, vector<vector<Room>>& grid, Player& player);
+void enter_key_room(Room& room, int& keys_collected, vector<vector<Room>>& grid, int size, int player_x, int player_y, Player& player);
 void enter_chest_room(Room& room, Player& player);
 void enter_escape_room(Room& room);
 
 // What it does: generate escape room when a player obtained 3 keys.
 //              the square that the player currently on, the starting square, the adjacent squares cannot be the escape room
 //              output modifies the grid
-void reveal_escape_room(vector<vector<Room>>& grid, Player& player);
+void reveal_escape_room(vector<vector<Room>>& grid, int size, int player_x, int player_y);
 
 // What it does: Drops a weapon into the room. Called when player discards a weapon or when chest reward is rejected due to full cap
-
-
 void drop_weapon_in_room(Room& room, Weapon* weapon);
 
 
 // What it does: Drops a healing item into the room. same as above
-
 void drop_healing_in_room(Room& room, Healing* healing);
 
 
 // What it does: Displays items dropped in this room and lets the player pick them up if they have inventory space.
-
 void check_room_for_items(Room& room, Player& player);
 #endif
