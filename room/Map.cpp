@@ -86,7 +86,6 @@ bool Map::movePlayer(string direction) {
     // Valid move: update position and mark new cell as explored
     player.playerX = newX;
     player.playerY = newY;
-    grid[newY][newX].revealed = true;
     return true;
 }
 
