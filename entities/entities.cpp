@@ -1,6 +1,7 @@
 #include "entities.h"
 #include <cstdlib>
 #include <iostream>
+#include <iomanip>
 
 using namespace std;
 
@@ -14,9 +15,17 @@ void Enemy::takedamage(int damage) {
     cout << "Enemy took " << damage << " damage. HP remain: " << hp << endl;
 }
 
-int Enemy::attackAction() {
+int Enemy::attackAction(int l) {
     cout << "Enemy deals " << attack << " damage!" << endl;
     return attack;
+}
+
+void Enemy::printEnemyDescription(){
+    cout << "╔═══════════════════╗" << endl;
+    cout << "║ " << left << setw(8) << "Type: " << right << setw(9) << name << " ║" << endl;
+    cout << "║ " << "Health: " << right << setw(9) << hp << " ║" << endl;
+    cout << "║ " << "Attack: " << right << setw(9) << attack << " ║" << endl;
+    cout << "╚═══════════════════╝" << endl;
 }
 
 // --- Mage Implementation ---
@@ -31,7 +40,7 @@ int Mage::attackAction(int l){
         return newatt;
     }
     else{
-        cout << "You dedged the attack from the mage!" << endl;
+        cout << "You dodged the attack from the mage!" << endl;
         streak = 0;
         return 0;
     }
@@ -39,7 +48,7 @@ int Mage::attackAction(int l){
 Mage::Mage(int h, int att, string n): Enemy(h, att, n) {}
 
 // --- Assassin Implementation ---
-int Assassin::attackAction() {
+int Assassin::attackAction(int l) {
     if (sneaked){
         cout << "Dealing " << attack << " damage." << endl;
         sneaked = false;
@@ -54,22 +63,21 @@ Assassin::Assassin(int h, int a, string n): Enemy(h,a,n), sneakRate(0.3), sneake
 
 bool Assassin::attemptDodge() {
     int roll = rand() % 10;
-    return (roll < sneakRate);
+    if (roll < sneakRate*10){
+        sneaked = true;
+        return true;
+    }
+    else return false;
 }
 
 //factory
-Enemy* generateEnemy(int killcnt){
+Enemy* generateEnemy(int killcnt, bool isHard){
     int hp = 0,attack = 0;
-    if (killcnt < 2){
-        hp = rand() % 3 + 6;
-        attack = rand() % 2 + 1;
-        return new Enemy(hp, attack, "Standard");
-    }
-    else {
-        hp = rand() % 4 + 10; //10-13
-        attack = rand() % 2 + 2; //2-3
-        int roll = rand() % 100;
-        if (roll<50) return new Assassin(hp, attack, "Assassin");
-        else return new Mage(hp, attack*2, "Mage");
-    }
+    int roll = rand() % 100;
+    double diff = isHard? 1.5 : 1.0;
+    hp = diff * (rand() % (11 + 3*killcnt) + (50 + 3*killcnt));
+    attack = diff * (rand() % (4 + 2*killcnt) + (10 + 1*killcnt));
+    if (roll < 20) return new Enemy(hp, attack, "Standard");
+    if (roll < 60) return new Assassin(hp, attack, "Assassin");
+    else return new Mage(hp, attack*2, "Mage");
 }
