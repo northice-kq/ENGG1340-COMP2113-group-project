@@ -24,7 +24,7 @@ struct Player {
     bool pickupHealings(Healing* healing);
     bool discardHealings(int index);
     bool useHealing(int index);
-    void showWeapons();
+    void showWeapons(bool showFist);
     void showHealings();
     void showStats();
     void showWeaponDescription(int index);

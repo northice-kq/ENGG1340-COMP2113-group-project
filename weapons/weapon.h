@@ -14,7 +14,8 @@ struct Weapon {
     // -1 means no crit hit is possible
     Weapon(std::string name, std::string description, int baseDamage,
            int durability, int critHitRate);
-    void printDescription() const;
+    std::string shortDescription() const;
+    std::string longDescription() const;
     virtual int useWeapon() = 0;
 };
 

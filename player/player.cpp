@@ -15,13 +15,9 @@ Player::Player(bool is_hard_difficulty)
 
 bool Player::pickupWeapon(Weapon* weapon) {
     // no checking same weapon here, someone please implement
-    if (weapon->name == "Fist") {
-        std::cout << "Cannot add weapon: " << weapon->name << std::endl;
+    if (weapon->name == "Fist" || weaponsInv.size() >= weaponCap)
         return false;
-    } else if (weaponsInv.size() >= weaponCap) {
-        std::cout << "You cannot pick up more weapons!" << std::endl;
-        return false;
-    } else {
+    else {
         weaponsInv.emplace_back(weapon);
         return true;
     }
@@ -48,14 +44,11 @@ int Player::attackEnemy(int index) {
 
 bool Player::pickupHealings(Healing* healing) {
     if (healingsInv.size() >= healingCap) {
-        std::cout << "You cannot pick up more healings!" << std::endl;
         return false;
     } else {
         healingsInv.emplace_back(healing);
         std::sort(healingsInv.begin(), healingsInv.end(),
-                  [](Healing*& a, Healing*& b) {
-                      return a->name <= b->name;
-                  });
+                  [](Healing*& a, Healing*& b) { return a->name <= b->name; });
         return true;
     }
 }
@@ -89,16 +82,20 @@ bool Player::useHealing(int index) {
     }
 }
 
-void Player::showWeapons() {
-    std::cout << "=== Weapons ===\n";
-    for (int i = 0; i < weaponsInv.size(); i++) {
-        std::cout << i + 1 << ": " << weaponsInv[i]->name << std::endl;
+void Player::showWeapons(bool showFist) {
+    if (showFist) {
+        for (int i = 0; i < weaponsInv.size(); i++)
+            std::cout << i + 1 << ". " << weaponsInv[i]->shortDescription()
+                      << std::endl;
+    } else {
+        for (int i = 1; i < weaponsInv.size(); i++)
+            std::cout << i << ". " << weaponsInv[i]->shortDescription()
+                      << std::endl;
     }
 }
 void Player::showHealings() {
-    std::cout << "=== Healings ===\n";
     for (int i = 0; i < healingsInv.size(); i++) {
-        std::cout << i + 1 << ": " << healingsInv[i]->name << std::endl;
+        std::cout << i + 1 << ". " << healingsInv[i]->name << std::endl;
     }
 }
 void Player::showStats() {
@@ -109,7 +106,7 @@ void Player::showStats() {
 }
 void Player::showWeaponDescription(int index) {
     if (index >= 0 && index < weaponsInv.size()) {
-        weaponsInv[index]->printDescription();
+        std::cout << weaponsInv[index]->longDescription();
     }
 }
 void Player::showHealingDescription(int index) {

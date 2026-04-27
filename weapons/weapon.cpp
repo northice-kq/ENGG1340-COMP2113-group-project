@@ -1,6 +1,7 @@
 #include "weapon.h"
 #include <climits>
 #include <iostream>
+#include <sstream>
 #include <string>
 
 Weapon::Weapon(std::string name, std::string description, int baseDamage,
@@ -8,17 +9,29 @@ Weapon::Weapon(std::string name, std::string description, int baseDamage,
     : name(name), description(description), baseDamage(baseDamage),
       durability(durability), critHitRate(critHitRate) {}
 
-void Weapon::printDescription() const {
-    std::cout << "Name      : " << name << std::endl;
+std::string Weapon::shortDescription() const {
+    std::ostringstream oss;
+    oss << name << "(Durability: ";
+    if (durability == INT_MAX)
+        oss << "Infinite)";
+    else
+        oss << durability << ')';
+    return oss.str();
+}
+
+std::string Weapon::longDescription() const {
+    std::ostringstream oss;
+    oss << "Name      : " << name << '\n';
     if (name != "Fist") {
-        std::cout << "Durability: ";
+        oss << "Durability: ";
         if (durability == INT_MAX) {
-            std::cout << "Infinite" << std::endl;
+            oss << "Infinite\n";
         } else {
-            std::cout << durability << std::endl;
+            oss << durability << '\n';
         }
     }
-    std::cout << description << std::endl;
+    oss << description << '\n';
+    return oss.str();
 }
 
 Fist::Fist(int durability)
