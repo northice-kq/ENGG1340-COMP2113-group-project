@@ -53,7 +53,7 @@ bool Player::pickupHealings(Healing* healing) {
     } else {
         healingsInv.emplace_back(healing);
         std::sort(healingsInv.begin(), healingsInv.end(),
-                  [](const Healing*& a, const Healing*& b) {
+                  [](Healing*& a, Healing*& b) {
                       return a->name <= b->name;
                   });
         return true;
