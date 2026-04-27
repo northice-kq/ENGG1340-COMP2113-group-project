@@ -25,7 +25,7 @@ void writer_print(const string& text, bool is_dots, int char_delay, int dot_dela
         // Get the last character of the string
         if (!text.empty()) {
             char last_char = text.back();
-            if (last_char == '!' || last_char == '?' || last_char == ')') {
+            if (last_char == '!' || last_char == '?' || last_char == ')' || last_char == ':') {
                 this_thread::sleep_for(chrono::milliseconds(200));
                 // Make sure we do not create dots if there are other punctuations
                 skip_dots = true; // skip dots as we do not need tem when there are ! or ?
