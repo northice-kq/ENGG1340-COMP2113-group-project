@@ -62,7 +62,7 @@ vector<vector<Room>> assign_rooms(int size) {
 // What it does:
 //              On first entry, plays the game intro and sets the tone
 //              On first return, triggers a creepy atmospheric event. all later returns are then brief
-void enter_start_room(Room& room) {
+void enter_start_room(Room& room, Player& player) {
     scene_break();
 
     // for first visit (game intro)
@@ -71,7 +71,8 @@ void enter_start_room(Room& room) {
 
         writer_print("You wake up on cold, damp stone");
         writer_print("Your head throbs. You don't remember how you got here");
-        writer_print("The room is small. A heavy iron door stands to the north. It's locked");
+        writer_print("The room is small. A heavy iron door stands to the north");
+        writer_print("It's locked");
         this_thread::sleep_for(chrono::milliseconds(1500));
         writer_print("Three keyholes are carved into its frame");
         writer_print("You need to find three keys to escape this dungeon");
@@ -93,6 +94,7 @@ void enter_start_room(Room& room) {
         writer_print("Something... or someone was dragged. Recently");
         this_thread::sleep_for(chrono::milliseconds(1000));
         writer_print("You are not alone here");
+        writer_print("You'd better find another exit");
         press_enter_to_continue();
         return;
     }
@@ -164,7 +166,7 @@ void enter_empty_room(Room& room, Player& player) {
 //              if not, marks it collected,
 //              At 3 keys, prints a special message signaling the escape room is now available and past to func
 
-void enter_key_room(Room& room, vector<vector<Room>>& grid, Player& player) {
+void enter_key_room(Room& room, int& keys_collected, vector<vector<Room>>& grid, int size, int player_x, int player_y, Player& player) {
     room.revealed = true;
     scene_break();
 
@@ -180,10 +182,10 @@ void enter_key_room(Room& room, vector<vector<Room>>& grid, Player& player) {
 
     // Pick up the key
     room.key_collected = true;
-    player.key_count++;
+    keys_collected++;
 
     // Pick a random key description
-    if (player.key_count <= 2) {
+    if (keys_collected <= 2) {
         string key_texts[] = {
             "A rusty iron key hangs from a hook on the wall",
             "You spot a wooden key lie on a wet puddle",
@@ -210,18 +212,18 @@ void enter_key_room(Room& room, vector<vector<Room>>& grid, Player& player) {
     this_thread::sleep_for(chrono::milliseconds(200));
 
     // Print progress
-    string progress = "Key collected! (" + to_string(player.key_count) + "/3)";
+    string progress = "Key collected! (" + to_string(keys_collected) + "/3)";
     writer_print(progress);
 
     // Special message when the player has all 3 keys
-    if (player.key_count == 1) {
+    if (keys_collected == 1) {
         writer_print("Two more keys and you may find the way out");
     }
-    else if (player.key_count == 2) {
+    else if (keys_collected == 2) {
         writer_print("One more key remains hidden in the dungeon");
     }
-    else if (player.key_count == 3) {
-        reveal_escape_room(grid, player);
+    else if (keys_collected == 3) {
+        reveal_escape_room(grid, size, player_x, player_y);
     }
 }
 
@@ -502,22 +504,22 @@ void enter_chest_room(Room& room, Player& player) {
 // What it does: generate escape room when a player obtained 3 keys.
 //              the square that the player currently on, the starting square, the adjacent squares cannot be the escape room
 //              output modifies the grid
-void reveal_escape_room(vector<vector<Room>>& grid, const Player& player) {
+void reveal_escape_room(vector<vector<Room>>& grid, int size, int player_x, int player_y) {
     // build list of valid coordinates, exc. start & current & adjacent square
     vector<pair<int, int>> valid;
-    for (int y = 0; y < grid.size(); y++) {
-        for (int x = 0; x < grid.size(); x++) {
+    for (int y = 0; y < size; y++) {
+        for (int x = 0; x < size; x++) {
             // Skip starting sq
             if (x == 0 && y == 0) continue;
 
             // skip player position
-            if (x == player.playerX && y == player.playerY) continue;
+            if (x == player_x && y == player_y) continue;
 
             // skip adjacent rooms
-            if (x == player.playerX && y == player.playerY - 1) continue; // up
-            if (x == player.playerX && y == player.playerY + 1) continue; // down
-            if (x == player.playerX - 1 && y == player.playerY) continue; // left
-            if (x == player.playerX + 1 && y == player.playerY) continue; // right
+            if (x == player_x && y == player_y - 1) continue; // up
+            if (x == player_x && y == player_y + 1) continue; // down
+            if (x == player_x - 1 && y == player_y) continue; // left
+            if (x == player_x + 1 && y == player_y) continue; // right
 
             valid.push_back({x, y});
         }
@@ -589,7 +591,7 @@ void check_room_for_items(Room& room, Player& player) {
         if (!room.dropped_weapons.empty()) {
             cout << "Weapons on the floor:\n" ;
             for (int i = 0; i < (int)room.dropped_weapons.size(); i++) {
-                cout << "    " << i + 1 << ". " << room.dropped_weapons[i]->shortDescription() << endl;
+                cout << "    " << i + 1 << ". " << room.dropped_weapons[i]->name << " (Durability: " << room.dropped_weapons[i]->durability << ")" << "\n";
             }
         }
 
@@ -609,22 +611,27 @@ void check_room_for_items(Room& room, Player& player) {
             writer_print("You leave the items where they lie");
             break;
         }
-        else if ((choice == "w" || choice == "W") && room.dropped_weapons.empty()) {
-            writer_print("There are no weapons on the floor");
-            continue;
-        }
-        else if (choice == "w" || choice == "W") {
+
+        if (choice == "w" || choice == "W") {
+            if (room.dropped_weapons.empty()) {
+                writer_print("There are no weapons on the floor");
+                continue;
+            }
+
             // show current weapon inventory first
             writer_print("Your weapon inventory:");
-            player.showWeapons(true);
-            cout << "  Capacity: " << player.weaponsInv.size() << "/" << player.weaponCap << " (including Fist)" << endl;
+            player.showWeapons();
+            cout << "  Capacity: " << player.weaponsInv.size() << "/" << player.weaponCap + 1 << " (including Fist)" << endl;
+
             cout << "\n  Which weapon to pick up? (1-" << room.dropped_weapons.size() << ", or 0 to cancel): " << flush;
             int index;
-            if (!(cin >> index) || index < 0 || index > room.dropped_weapons.size()) {
+            cin >> index;
+
+            if (index == 0) continue;
+            if (index < 1 || index > (int)room.dropped_weapons.size()) {
                 writer_print("Invalid choice");
                 continue;
             }
-            else if (index == 0) continue;
 
             Weapon* to_pickup = room.dropped_weapons[index - 1];
             bool success = player.pickupWeapon(to_pickup); // see if the player have cap, if no, they can't pick up
@@ -643,15 +650,14 @@ void check_room_for_items(Room& room, Player& player) {
                 cin >> discard_choice;
 
                 if (discard_choice == "y" || discard_choice == "Y") {
-                    player.showWeapons(false);
+                    player.showWeapons();
                     cout << "  Choose weapon to discard (1-" << player.weaponsInv.size() << ", or 0 to cancel): " << flush;
                     int discard_index;
-                    if (!(cin >> discard_index) || discard_index < 0 || discard_index > player.weaponsInv.size()){
-                        cout << "Invalid choice" << endl;
-                    }
-                    else if (discard_index != 0) {
-                        Weapon* discarded = player.weaponsInv[discard_index];
-                        bool discarded_success = player.discardWeapon(discard_index);
+                    cin >> discard_index;
+
+                    if (discard_index > 0 && discard_index <= (int)player.weaponsInv.size()) {
+                        Weapon* discarded = player.weaponsInv[discard_index - 1];
+                        bool discarded_success = player.discardWeapon(discard_index - 1);
 
                         if (discarded_success) {
                             writer_print("You discard the " + discarded->name);
@@ -681,11 +687,14 @@ void check_room_for_items(Room& room, Player& player) {
 
             cout << "\n  Which healing to pick up? (1-" << room.dropped_healings.size() << ", or 0 to cancel): " << flush;
             int index;
-            if (!(cin >> index) || index < 0 || index > room.dropped_healings.size()) {
+            cin >> index;
+
+            if (index == 0) continue;
+            if (index < 1 || index > (int)room.dropped_healings.size()) {
                 writer_print("Invalid choice");
                 continue;
             }
-            else if (index == 0) continue;
+
             Healing* to_pickup = room.dropped_healings[index - 1];
             bool success = player.pickupHealings(to_pickup);
 
@@ -708,10 +717,8 @@ void check_room_for_items(Room& room, Player& player) {
                          << ", or 0 to cancel): " << flush;
                     int discard_index;
                     cin >> discard_index;
-                    if (!(cin >> discard_index) || discard_index < 0 || discard_index > player.healingsInv.size()) {
-                        writer_print("Invalid choice");
-                    }
-                    else if (discard_index != 0) {
+
+                    if (discard_index > 0 && discard_index <= (int)player.healingsInv.size()) {
                         Healing* discarded = player.healingsInv[discard_index - 1];
                         bool discarded_success = player.discardHealings(discard_index - 1);
 
