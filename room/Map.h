@@ -1,8 +1,8 @@
 #ifndef MAP_H
 #define MAP_H
 // this file should be called the game engine
-#include "../room/room.h"
-#include "../player/player.h"
+#include "room.h"
+#include "player.h"
 #include <vector>
 #include <string>
 
@@ -12,6 +12,10 @@ struct Map {
     std::vector<std::vector<Room>> grid;  // track visited cells
     Player player;           // current position
 
+    // showing escape square - @north_ice
+    int escapeX, escapeY;
+    bool escapeRevealed;
+
     Map(bool is_hard_difficulty); // constructor
     Map(std::string filepath);    // restore game from text file (implement later)
     ~Map();                         // destructor (not strictly needed but good habit)
@@ -19,6 +23,13 @@ struct Map {
     void printMap() const;          // display the grid with @ . ?
     bool movePlayer(std::string direction); // returns true if move valid, false otherwise
     bool isGameOver() const;        // placeholder for later (e.g., exit found)
+
+    /* linking the escape room with room.cpp
+     * return the square of the escape room - @north_ice */
+    void setEscapeRoom(int x, int y);
+    Player& getPlayer() { return player; }
+    Room& getRoom(int x, int y) { return grid[y][x]; }
+    int getSize() const { return size; }
 };
 
 #endif
