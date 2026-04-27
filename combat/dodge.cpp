@@ -166,6 +166,8 @@ bool Dodge() {
     return dodged;
 }
 
+
+// This part are suggested to be removed
 int main() {
     bool result = Dodge();
     std::cout << "\nFinal Result: " << (result ? "DODGED!" : "HIT!") << std::endl;
