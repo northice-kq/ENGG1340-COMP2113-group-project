@@ -36,6 +36,10 @@ struct Room {
     bool chest_looted;      // true if the chest in this room has been opened
     bool start_revisited;   // true if player goes back to start (0,0)
     bool start_event_triggered;   // true after the creepy return event plays
+    bool has_warning;   // true if the mirror room has been marked with a warning
+
+    vector<Weapon*> dropped_weapons;   // weapons left on the floor
+    vector<Healing*> dropped_healings; // healings left on the floor
 
     // What it does: Constructs a Room with the given type and coordinates.
 
@@ -46,8 +50,6 @@ struct Room {
     Room(Room_Type room_type, int x_co, int y_co);
 };
 
-
-
 // what it does: Randomly assigns a Room_Type to every cell in the grid.
 //              START at (0,0), then 3 KEY, 6 CHEST, 10 ENEMY, 5 NOTHING
 //              using shuffle for (x,y)
@@ -56,14 +58,29 @@ vector<vector<Room>> assign_rooms(int size);
 
 
 // What it does: Handles the player entering every different types of rooms
-void enter_start_room(Room& room);
-void enter_empty_room(Room& room);
-void enter_key_room(Room& room, int& keys_collected, vector<vector<Room>>& grid, int size, int player_x, int player_y);
-void enter_chest_room(Room& room, vector<Weapon*>& weapons, vector<Healing*>& healings, int& player_attack, int& player_hp, int& player_max_hp);
+void enter_start_room(Room& room, Player& player);
+void enter_empty_room(Room& room, Player& player);
+void enter_key_room(Room& room, int& keys_collected, vector<vector<Room>>& grid, int size, int player_x, int player_y, Player& player);
+void enter_chest_room(Room& room, Player& player);
 void enter_escape_room(Room& room);
 
 // What it does: generate escape room when a player obtained 3 keys.
 //              the square that the player currently on, the starting square, the adjacent squares cannot be the escape room
 //              output modifies the grid
 void reveal_escape_room(vector<vector<Room>>& grid, int size, int player_x, int player_y);
+
+// What it does: Drops a weapon into the room. Called when player discards a weapon or when chest reward is rejected due to full cap
+
+
+void drop_weapon_in_room(Room& room, Weapon* weapon);
+
+
+// What it does: Drops a healing item into the room. same as above
+
+void drop_healing_in_room(Room& room, Healing* healing);
+
+
+// What it does: Displays items dropped in this room and lets the player pick them up if they have inventory space.
+
+void check_room_for_items(Room& room, Player& player);
 #endif
