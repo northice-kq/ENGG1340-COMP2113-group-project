@@ -9,7 +9,7 @@ Player::Player(bool is_hard_difficulty)
     : // constructor
       playerX(0), playerY(0), HP(100), maxHP(100), playerAttack(5),
       key_count(0), kill_count(0),
-      weaponCap(is_hard_difficulty ? 2 : 1),   // can change this later
+      weaponCap(is_hard_difficulty ? 2 : 4),   // can change this later
       healingCap(is_hard_difficulty ? 5 : 10), // can change this later
       weaponsInv({new Fist()}) {}
 
