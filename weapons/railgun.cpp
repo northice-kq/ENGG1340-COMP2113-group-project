@@ -1,15 +1,14 @@
 // more complicated mechanics so put in a separate file
 #include "weapon.h"
 #include <chrono>
-#include <climits>
 #include <fcntl.h> // file control
 #include <iostream>
 #include <termios.h> // for instant key responds
 #include <thread>
 #include <unistd.h> //unix
 
-Railgun::Railgun()
-    : Weapon("Railgun", "Charge up your attack!", 20, INT_MAX, -1) {}
+Railgun::Railgun(int durability)
+    : Weapon("Railgun", "Charge up your attack!", 20, durability, -1) {}
 
 int Railgun::useWeapon() {
     int damage = baseDamage;

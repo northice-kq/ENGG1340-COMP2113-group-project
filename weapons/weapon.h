@@ -1,6 +1,7 @@
 #ifndef WEAPON_H
 #define WEAPON_H
 
+#include <climits>
 #include <string>
 
 struct Weapon {
@@ -18,27 +19,27 @@ struct Weapon {
 };
 
 struct Fist : Weapon {
-    Fist();
+    Fist(int durability = INT_MAX);
     int useWeapon() override;
 };
 
 struct Sword : Weapon {
-    Sword();
+    Sword(int durability = 100);
     int useWeapon() override;
 };
 
 struct Axe : Weapon {
-    Axe();
+    Axe(int durabiltiy = 15);
     int useWeapon() override;
 };
 
 struct CalculatorGun : Weapon {
-    CalculatorGun();
+    CalculatorGun(int durability = INT_MAX);
     int useWeapon() override;
 };
 
 struct Railgun : Weapon {
-    Railgun();
+    Railgun(int durability = INT_MAX);
     int useWeapon() override;
 };
 

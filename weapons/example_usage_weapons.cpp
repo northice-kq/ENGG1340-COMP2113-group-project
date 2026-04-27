@@ -14,9 +14,7 @@ int main() {
     v.emplace_back(new CalculatorGun()); // add a new weapon
     v[1]->printDescription();
     v[1]->useWeapon();
-    v[1]->upgrade(1);
-    std::cout << std::endl;
-    v[1]->printDescription();
-    v[1]->useWeapon();
-    v[1]->useWeapon();
+    v.emplace_back(new Sword(5));
+    // add a weapon with custom durability, used for restoring the game
+    v[2]->printDescription();
 }

@@ -21,9 +21,9 @@ void Weapon::printDescription() const {
     std::cout << description << std::endl;
 }
 
-Fist::Fist()
+Fist::Fist(int durability)
     : Weapon("Fist", "Punch your enemies when you do not have any weapons!", 10,
-             INT_MAX, 20) {}
+             durability, 20) {}
 
 int Fist::useWeapon() {
     int damage = baseDamage;
@@ -34,8 +34,8 @@ int Fist::useWeapon() {
     return damage;
 }
 
-Sword::Sword()
-    : Weapon("Sword", "A durable and reliable weapon!", 20, 100, 20) {}
+Sword::Sword(int durability)
+    : Weapon("Sword", "A durable and reliable weapon!", 20, durability, 20) {}
 
 int Sword::useWeapon() {
     if (durability == 0) {
@@ -54,9 +54,9 @@ int Sword::useWeapon() {
     return damage;
 }
 
-Axe::Axe()
+Axe::Axe(int durability)
     : Weapon("Axe", "A strong weapon which has high chance of a critical hit!",
-             30, 15, 5) {}
+             30, durability, 5) {}
 
 int Axe::useWeapon() {
     if (durability == 0) {
@@ -73,9 +73,9 @@ int Axe::useWeapon() {
     return damage;
 }
 
-CalculatorGun::CalculatorGun()
+CalculatorGun::CalculatorGun(int durability)
     : Weapon("Calculator gun", "A gun which shoots out numbers randomly!", 0,
-             INT_MAX, -1) {}
+             durability, -1) {}
 
 int CalculatorGun::useWeapon() {
     // shoots out 5 random numbers from 1 to 8
@@ -86,5 +86,6 @@ int CalculatorGun::useWeapon() {
         std::cout << ' ' << x;
         damage += x;
     }
+    std::cout << std::endl;
     return damage;
 }
