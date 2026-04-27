@@ -4,7 +4,6 @@
 #include <thread>
 #include <chrono>
 #include <cstdlib>
-#include <ctime>
 #include <algorithm>  // for using shuffle
 #include <random>
 using namespace std;
@@ -18,6 +17,7 @@ Room::Room(Room_Type room_type, int x_co, int y_co) {
     chest_looted = false;
     start_revisited = false;
     start_event_triggered = false;
+    has_warning = false;
 
     if (room_type == START) {
         revealed = true;
@@ -106,9 +106,23 @@ void enter_start_room(Room& room) {
 //              atmospheric description using the typewriter effect.
 //              Small chance (20%) the player finds a moment to rest
 
-void enter_empty_room(Room& room) {
+void enter_empty_room(Room& room, Player& player) {
     room.revealed = true;
     scene_break();
+
+    if (room.has_warning == true) {
+        writer_print("You came back. You are not afraid to die, are you?");
+        writer_print("The mirror still shows your reflection");
+        writer_print("...with blood in its eyes", false);
+        writer_print("...smiling", false);
+        this_thread::sleep_for(chrono::milliseconds(1000));
+        writer_print("Just leave");
+        return;
+    }
+
+    if (!room.dropped_weapons.empty() || !room.dropped_healings.empty()) {
+        check_room_for_items(room, player);
+    }
     // sentences with atmospheric flavour
     string flavor_texts[] = {
         "Dust swirls in the stale air as you walk into this room",
@@ -120,7 +134,7 @@ void enter_empty_room(Room& room) {
         "Nothing but silence and shadows here",
         "Faded desperate scratches mark the walls, long abandoned",
         "Four cold lifeless mannequins stand in each corner. No sign of life here",
-        "The mirror in this room shows your reflection.\nYou blink\nHe didn't"
+        "The mirror in this room shows your reflection"
     };
 
     // Pick a random flavor text
@@ -128,6 +142,9 @@ void enter_empty_room(Room& room) {
     writer_print(flavor_texts[index]);
 
     if (index == 9) {
+        room.has_warning = true;  // permanently marks this room
+        writer_print("You blink");
+        writer_print(("'It' didn't"));
         writer_print("I suggest you to leave this room as fast as possible");
     }
     else {
@@ -147,9 +164,14 @@ void enter_empty_room(Room& room) {
 //              if not, marks it collected,
 //              At 3 keys, prints a special message signaling the escape room is now available and past to func
 
-void enter_key_room(Room& room, int& keys_collected, vector<vector<Room>>& grid, int size, int player_x, int player_y) {
+void enter_key_room(Room& room, int& keys_collected, vector<vector<Room>>& grid, int size, int player_x, int player_y, Player& player) {
     room.revealed = true;
     scene_break();
+
+    if (!room.dropped_weapons.empty() || !room.dropped_healings.empty()) {
+        check_room_for_items(room, player);
+    }
+
     if (room.key_collected) {
         // room is now just an empty room cuz key is taken
         writer_print("You have already taken the key from this room");
@@ -216,13 +238,18 @@ void enter_key_room(Room& room, int& keys_collected, vector<vector<Room>>& grid,
 //          player_max_hp - player's max HP (may be increased)
 // *using & so that we can modify from the function
 //
-void enter_chest_room(Room& room, vector<Weapon*>& weapons, vector<Healing*>& healings, int& player_attack, int& player_hp, int& player_max_hp) {
+void enter_chest_room(Room& room, Player& player) {
     room.revealed = true;
     scene_break();
 
     // Already looted
     if (room.chest_looted) {
         writer_print("The chest lies open and empty, its treasure long taken");
+
+        if (!room.dropped_weapons.empty() || !room.dropped_healings.empty()) {
+            writer_print("You notice something on the floor...");
+            check_room_for_items(room, player);
+        }
         return;
     }
 
@@ -253,56 +280,35 @@ void enter_chest_room(Room& room, vector<Weapon*>& weapons, vector<Healing*>& he
     }
 
     // 15% healing
+    // 15% healing
     if (category_roll < 20) {
         int healing_roll = rand() % 100;
 
-        Healing* found = nullptr;
+        Healing* new_healing = nullptr;
+
         if (healing_roll < 40) {
-            // First Aid kit (40%)
-            for (auto& h : healings) {
-                if (h->name == "First aid kit") {
-                    found = h;
-                    break;
-                }
-            }
-            if (!found) {
-                found = new firstAidKit();
-                healings.push_back(found);
-            }
+            new_healing = new firstAidKit(); //40%
             writer_print("You found a First Aid Kit!");
             writer_print("Heals you up to 75HP");
         }
         else if (healing_roll < 80) {
-            // bandage (40%)
-            for (auto& h : healings) {
-                if (h->name == "Bandage") {
-                    found = h;
-                    break;
-                }
-            }
-            if (!found) {
-                found = new bandage();
-                healings.push_back(found);
-            }
+            new_healing = new bandage(); //40%
             writer_print("You found a Bandage!");
             writer_print("Heals 10HP, up to 75HP");
         }
         else {
-            // Med Kit (20%)
-            for (auto& h : healings) {
-                if (h->name == "Med kit") {
-                    found = h;
-                    break;
-                }
-            }
-            if (!found) {
-                found = new medKit();
-                healings.push_back(found);
-            }
+            new_healing = new medKit(); //20%
             writer_print("You found a Med Kit!");
             writer_print("Fully restores your health");
         }
-        found->count++; // please fix this by directly calling the Player::pickupHealings function
+
+        bool success = player.pickupHealings(new_healing);
+        if (!success) {
+            writer_print("But your healing inventory is full!");
+            writer_print("You leave it behind reluctantly");
+            drop_healing_in_room(room, new_healing);
+        }
+
         room.chest_looted = true;
         press_enter_to_continue();
         return;
@@ -310,132 +316,189 @@ void enter_chest_room(Room& room, vector<Weapon*>& weapons, vector<Healing*>& he
 
     // 15% for weapon
     if (category_roll < 35) {
-        // build list of weapons the player does not own yet
-        vector<string> available;
-        bool has_sword = false, has_axe = false, has_calcgun = false;
+        // Roll weapon type
+        int weapon_roll = rand() % 100; // 0-99
 
-        for (auto& w : weapons) {
-            if (w->name == "Sword")           has_sword = true;
-            if (w->name == "Axe")             has_axe = true;
-            if (w->name == "Calculator gun")  has_calcgun = true;
+        string chosen;
+        if (weapon_roll < 40) {
+            chosen = "Sword";           //40%
         }
-
-        if (!has_sword)  available.push_back("Sword");
-        if (!has_axe)    available.push_back("Axe");
-        if (!has_calcgun) available.push_back("Calculator gun");
-
-        // if all weapons already owned, reroll internally to stat boost
-        if (available.empty()) {
-            writer_print("The chest contains a weapon rack, but you already have everything");
-            writer_print("Instead, you find something else of value");
-            // fall through to stat boost below
+        else if (weapon_roll < 70) {
+            chosen = "Axe";             //30%
+        }
+        else if (weapon_roll < 85) {
+            chosen = "Calculator gun";  //15%
         }
         else {
-            // the weighting is Sword 80%, Axe 15%, CalculatorGun 5%
-            int total_weight = 0;
-            for (auto& name : available) {
-                if (name == "Sword")           total_weight += 80;
-                if (name == "Axe")             total_weight += 15;
-                if (name == "Calculator gun")  total_weight += 5;
+            chosen = "Railgun";         //15%
+        }
+
+        // check if player already owns this weapon type
+        Weapon* existing = nullptr;
+        for (auto& w : player.weaponsInv) {
+            if (w->name == chosen) {
+                existing = w;
+                break;
             }
+        }
+        // if yes, durability may increase
+        if (existing) {
+            bool infinite_durability = (existing->name == "Calculator gun" ||
+                                        existing->name == "Railgun");
 
-            int weapon_roll = rand() % total_weight;
-            string chosen;
-            int cumulative = 0;
+            writer_print("You found another " + chosen + "!");
 
-            for (auto& name : available) {
-                int weight = 0;
-                if (name == "Sword")           weight = 80;
-                if (name == "Axe")             weight = 15;
-                if (name == "Calculator gun")  weight = 5;
+            if (infinite_durability) {
+                // infinite durability weapons grant stat boost directly
+                this_thread::sleep_for(chrono::milliseconds(300));
+                writer_print("Its power resonates with your existing weapon!");
 
-                if (weapon_roll < cumulative + weight) {
-                    chosen = name;
-                    break;
+                if (chosen == "Calculator gun") {
+                    player.playerAttack += 2;
+                    writer_print("The numbers align perfectly. Attack +2! (" +
+                                 to_string(player.playerAttack) + ")");
                 }
-                cumulative += weight;
+                else if (chosen == "Railgun") {
+                    player.maxHP += 10;
+                    player.HP += 10;
+                    writer_print("The charge flows through you. Max HP +10! (" +
+                                 to_string(player.maxHP) + ")");
+                }
             }
+            else {
+                // restore durability by 10 for sword and axe
+                int restored = 10;
+                if (existing->durability + restored > 100) {
+                    restored = 100 - existing->durability;
+                }
+                existing->durability += restored;
 
-            // Add the weapon
-            Weapon* new_weapon = nullptr;
-            if (chosen == "Sword") {
-                new_weapon = new Sword();
-                writer_print("You found a Sword!");
-                writer_print("A durable and reliable weapon. 20 base damage");
-            }
-            else if (chosen == "Axe") {
-                new_weapon = new Axe();
-                writer_print("You found an Axe!");
-                writer_print("High crit chance. 30 base damage. Low durability");
-            }
-            else if (chosen == "Calculator gun") {
-                new_weapon = new CalculatorGun();
-                writer_print("You found the Calculator Gun!");
-                writer_print("Shoots random numbers. Chaotic but powerful");
-            }
-            if (new_weapon) {
-                weapons.push_back(new_weapon);
+                if (restored > 0) { // if resstorable
+                    writer_print("Durability restored by " + to_string(restored) +
+                                 "! (" + to_string(existing->durability) + "/100)");
+                }
+                else {
+                    writer_print("Durability is already full! (" +
+                                 to_string(existing->durability) + "/100)");
+                }
+
+                // grant stat boost when durability is full
+                if (existing->durability == 100) {
+                    this_thread::sleep_for(chrono::milliseconds(300));
+                    writer_print("The " + chosen + " is in perfect condition!");
+
+                    if (chosen == "Sword") {
+                        player.playerAttack += 1;
+                        writer_print("Its sharp edge inspires you. Attack +1! (" +
+                                     to_string(player.playerAttack) + ")");
+                    }
+                    else if (chosen == "Axe") {
+                        player.maxHP += 5;
+                        player.HP += 5;
+                        writer_print("Its weight feels reassuring. Max HP +5! (" +
+                                     to_string(player.maxHP) + ")");
+                    }
+                }
             }
 
             room.chest_looted = true;
             press_enter_to_continue();
             return;
         }
+
+        // add to inventory with new weapon
+        Weapon* new_weapon = nullptr;
+        if (chosen == "Sword") {
+            new_weapon = new Sword();
+            writer_print("You found a Sword!");
+            writer_print("A durable and reliable weapon. 20 base damage");
+        }
+        else if (chosen == "Axe") {
+            new_weapon = new Axe();
+            writer_print("You found an Axe!");
+            writer_print("High crit chance. 30 base damage. Low durability");
+        }
+        else if (chosen == "Calculator gun") {
+            new_weapon = new CalculatorGun();
+            writer_print("You found the Calculator Gun!");
+            writer_print("Shoots random numbers. Chaotic but powerful");
+        }
+        else if (chosen == "Railgun") {
+            new_weapon = new Railgun();
+            writer_print("You found the Railgun!");
+            writer_print("Charge up for massive damage. Timing is everything");
+        }
+
+        if (new_weapon) {
+            bool success = player.pickupWeapon(new_weapon);
+            if (!success) {
+                writer_print("But your weapon inventory is full!");
+                writer_print("The " + chosen + " slips from your hands");
+                writer_print("Consider discarding a weapon");
+                drop_weapon_in_room(room, new_weapon);
+            }
+        }
+
+        room.chest_looted = true;
+        press_enter_to_continue();
+        return;
     }
 
     // for the rest 65% or reroll form full weapon obtained
     int stat_roll = rand() % 100; // 0-99
     if (stat_roll < 40) {
         // +1 attack (40%)
-        player_attack += 1;
+        player.playerAttack += 1;
         string texts[] = {
             "You find an old training manual. Your technique improves slightly!",
             "A worn whetstone lets you sharpen your fighting edge",
             "A fighting comic. Better than nothing, I guess"
         };
         writer_print(texts[rand() % 3]);
-        writer_print("Attack increased by 1! (" + to_string(player_attack) + ")");
+        writer_print("Attack increased by 1! (" + to_string(player.playerAttack) + ")");
     }
     else if (stat_roll < 60) {
         // +2 Attack (20%)
-        player_attack += 2;
+        player.playerAttack += 2;
         string texts[] = {
             "You discover a master's fighting scroll. Power surges through you",
             "A sticky note that says 'hit harder, dummy.' It worked",
             "You felt a power surge from all the fallen adventurers in this dungeon"
         };
         writer_print(texts[rand() % 3]);
-        writer_print("Attack increased by 2! (" + to_string(player_attack) + ")");
+        writer_print("Attack increased by 2! (" + to_string(player.playerAttack) + ")");
     }
     else if (stat_roll < 90) {
         // +5 Max HP (30%)
-        player_max_hp += 5;
-        player_hp += 5;
+        player.maxHP += 5;
+         player.HP += 5;
         string texts[] = {
             "You drink from a shimmering fountain. You feel sturdier",
             "A warm glow envelops you. Your body feels reinforced",
             "Most humans are soft and weak, but you've got admirable heft!"
         };
         writer_print(texts[rand() % 3]);
-        writer_print("Max HP increased by 5! (" + to_string(player_max_hp) + ")");
+        writer_print("Max HP increased by 5! (" + to_string(player.maxHP) + ")");
     }
     else {
         // +10 Max HP (10%)
-        player_max_hp += 10;
-        player_hp += 10;
+        player.maxHP += 10;
+         player.HP += 10;
         string texts[] = {
             "You find a blessed elixir. Vitality courses through your veins",
             "A divine warmth fills the room. Your body is remade stronger",
             "A molden cheese sandwich! Delicious, nutritious, and absolutely not going to give you food poisoning"
         };
         writer_print(texts[rand() % 3]);
-        writer_print("Max HP increased by 10! (" + to_string(player_max_hp) + ")");
+        writer_print("Max HP increased by 10! (" + to_string(player.maxHP) + ")");
         writer_print("Now you can die, but... slower");
     }
 
     room.chest_looted = true;
     press_enter_to_continue();
 }
+
+
 // What it does: generate escape room when a player obtained 3 keys.
 //              the square that the player currently on, the starting square, the adjacent squares cannot be the escape room
 //              output modifies the grid
@@ -485,3 +548,197 @@ void enter_escape_room(Room& room) {
     writer_print("Cold fresh air hits your face");
     writer_print("Congratulations. You are free");
 }
+
+void drop_weapon_in_room(Room& room, Weapon* weapon) {
+    room.dropped_weapons.push_back(weapon);
+
+    string drop_texts[] = {
+        "You place the " + weapon->name + " on the cold stone floor",
+        "The " + weapon->name + " clatters to the ground",
+        "You leave the " + weapon->name + " behind. Perhaps you'll return"
+    };
+    writer_print(drop_texts[rand() % 3]);
+}
+
+void drop_healing_in_room(Room& room, Healing* healing) {
+    room.dropped_healings.push_back(healing);
+    string drop_texts[] = {
+        "You set the " + healing->name + " down gently",
+        "The " + healing->name + " joins the dust on the floor",
+        "You leave the " + healing->name + " here. It might be useful later"
+    };
+    writer_print(drop_texts[rand() % 3]);
+}
+
+void check_room_for_items(Room& room, Player& player) {
+    // disallow leaving items if the room is cursed
+    if (room.has_warning) {
+        writer_print("The air here feels wrong");
+        writer_print("You don't want to leave anything on this floor");
+        writer_print("Best to leave. Now");
+        return;
+    }
+    bool items_remain = true;
+
+    while (items_remain && (!room.dropped_weapons.empty() || !room.dropped_healings.empty())) { // ensure there are items on floor
+
+        scene_break();
+        writer_print("Shiny tools gleam through your eyes");
+
+        // show weapons on floor
+        if (!room.dropped_weapons.empty()) {
+            cout << "Weapons on the floor:\n" ;
+            for (int i = 0; i < (int)room.dropped_weapons.size(); i++) {
+                cout << "    " << i + 1 << ". " << room.dropped_weapons[i]->name << " (Durability: " << room.dropped_weapons[i]->durability << ")" << "\n";
+            }
+        }
+
+        // show healings on floor
+        if (!room.dropped_healings.empty()) {
+            cout << "Healings on the floor:\n";
+            for (int i = 0; i < (int)room.dropped_healings.size(); i++) {
+                cout << "    " << i + 1 << ". " << room.dropped_healings[i]->name << endl;
+            }
+        }
+
+        cout << "Pick up an item? (w = weapon, h = healing, n = leave): " << flush;
+        string choice;
+        cin >> choice;
+
+        if (choice == "n" || choice == "N") {
+            writer_print("You leave the items where they lie");
+            break;
+        }
+
+        if (choice == "w" || choice == "W") {
+            if (room.dropped_weapons.empty()) {
+                writer_print("There are no weapons on the floor");
+                continue;
+            }
+
+            // show current weapon inventory first
+            writer_print("Your weapon inventory:");
+            player.showWeapons();
+            cout << "  Capacity: " << player.weaponsInv.size() << "/" << player.weaponCap + 1 << " (including Fist)" << endl;
+
+            cout << "\n  Which weapon to pick up? (1-" << room.dropped_weapons.size() << ", or 0 to cancel): " << flush;
+            int index;
+            cin >> index;
+
+            if (index == 0) continue;
+            if (index < 1 || index > (int)room.dropped_weapons.size()) {
+                writer_print("Invalid choice");
+                continue;
+            }
+
+            Weapon* to_pickup = room.dropped_weapons[index - 1];
+            bool success = player.pickupWeapon(to_pickup); // see if the player have cap, if no, they can't pick up
+
+            if (success) {
+                writer_print("You pick up the " + to_pickup->name);
+                room.dropped_weapons.erase(room.dropped_weapons.begin() + index - 1);
+            }
+            else {
+                writer_print("Your weapon inventory is full!");
+                writer_print("Discard a weapon first, then try again");
+
+                // Offer to discard
+                cout << "\n  Discard a weapon? (y/n): " << flush;
+                string discard_choice;
+                cin >> discard_choice;
+
+                if (discard_choice == "y" || discard_choice == "Y") {
+                    player.showWeapons();
+                    cout << "  Choose weapon to discard (1-" << player.weaponsInv.size() << ", or 0 to cancel): " << flush;
+                    int discard_index;
+                    cin >> discard_index;
+
+                    if (discard_index > 0 && discard_index <= (int)player.weaponsInv.size()) {
+                        Weapon* discarded = player.weaponsInv[discard_index - 1];
+                        bool discarded_success = player.discardWeapon(discard_index - 1);
+
+                        if (discarded_success) {
+                            writer_print("You discard the " + discarded->name);
+                            drop_weapon_in_room(room, discarded);
+
+                            // try pickup again after they discard
+                            bool retry = player.pickupWeapon(to_pickup);
+                            if (retry) {
+                                writer_print("You pick up the " + to_pickup->name);
+                                room.dropped_weapons.erase(room.dropped_weapons.begin() + index - 1);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        else if (choice == "h" || choice == "H") {
+            if (room.dropped_healings.empty()) {
+                writer_print("There are no healings on the floor");
+                continue;
+            }
+
+            // show current healing inventory, mechanism same as weapons
+            cout << "\n  Your healing inventory:" << endl;
+            player.showHealings();
+            cout << "  Capacity: " << player.healingsInv.size() << "/" << player.healingCap << endl;
+
+            cout << "\n  Which healing to pick up? (1-" << room.dropped_healings.size() << ", or 0 to cancel): " << flush;
+            int index;
+            cin >> index;
+
+            if (index == 0) continue;
+            if (index < 1 || index > (int)room.dropped_healings.size()) {
+                writer_print("Invalid choice");
+                continue;
+            }
+
+            Healing* to_pickup = room.dropped_healings[index - 1];
+            bool success = player.pickupHealings(to_pickup);
+
+            if (success) {
+                writer_print("You pick up the " + to_pickup->name);
+                room.dropped_healings.erase(room.dropped_healings.begin() + index - 1);
+            }
+            else {
+                writer_print("Your healing inventory is full!");
+                writer_print("Use or discard a healing first, then try again");
+
+                // offer to discard, can pick up instantly after discard
+                cout << "\n  Discard a healing? (y/n): " << flush;
+                string discard_choice;
+                cin >> discard_choice;
+
+                if (discard_choice == "y" || discard_choice == "Y") {
+                    player.showHealings();
+                    cout << "  Choose healing to discard (1-" << player.healingsInv.size()
+                         << ", or 0 to cancel): " << flush;
+                    int discard_index;
+                    cin >> discard_index;
+
+                    if (discard_index > 0 && discard_index <= (int)player.healingsInv.size()) {
+                        Healing* discarded = player.healingsInv[discard_index - 1];
+                        bool discarded_success = player.discardHealings(discard_index - 1);
+
+                        if (discarded_success) {
+                            writer_print("You discard the " + discarded->name);
+                            drop_healing_in_room(room, discarded);
+
+                            // Try pickup again
+                            bool retry = player.pickupHealings(to_pickup);
+                            if (retry) {
+                                writer_print("You pick up the " + to_pickup->name);
+                                room.dropped_healings.erase(
+                                    room.dropped_healings.begin() + index - 1);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        else {
+            writer_print("Invalid choice. Type w, h, or n");
+        }
+    }
+}
+
