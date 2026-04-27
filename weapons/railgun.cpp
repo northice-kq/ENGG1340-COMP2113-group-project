@@ -12,7 +12,7 @@ Railgun::Railgun()
     : Weapon("Railgun", "Charge up your attack!", 20, INT_MAX, -1) {}
 
 int Railgun::useWeapon() {
-    int damage = baseDamage + baseDamage * (level - 1) / 5;
+    int damage = baseDamage;
     // 00001111222233334444555544443333222211110000
     const int width = 4, maxBonus = 5;
     const int linewidth = width * (maxBonus * 2 + 1);
