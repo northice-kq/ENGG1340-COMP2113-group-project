@@ -2,31 +2,145 @@
 #include <iostream>
 #include <string>
 
+#include <iostream>
+#include <cstdlib>
+#include <ctime>
+#include <vector>
+
 using namespace std;
 
 int main() {
-    Map dungeon(5);          // create 5x5 map
-    string command;
+    srand(time(0));
 
-    cout << "=== DUNGEON CRAWLER (Map Demo) ===\n";
-    cout << "Commands: up / down / left / right (or u/d/l/r). Type 'quit' to exit.\n\n";
+    // ---- Difficulty Selection ----
+    cout << "\n========================================" << "\n";
+    cout << "        DUNGEON CRAWLER" << "\n";
+    cout << "========================================" << "\n";
+    writer_print("Welcome to DUNGEON CRAWLER", false);
+    writer_print("Please select difficulty:");
+    cout << "  1. Easy" << "\n";
+    cout << "  2. Hard" << "\n";
+    cout << "\nChoice: ";
 
-    while (true) {
+    int diff_choice;
+    cin >> diff_choice;
+    bool is_hard = (diff_choice == 2);
+
+
+    Map dungeon(is_hard);          // create map
+    Player player(is_hard);
+    int size = dungeon.getSize();
+    vector<vector<Room>> room_grid = assign_rooms(size); // assigning the rooms
+    this_thread::sleep_for(chrono::milliseconds(1500));
+
+    bool game_running = true;
+    bool player_won = false;
+
+    // game intro, play BEFORE map is shown
+    Room& start_room = room_grid[0][0];
+    enter_start_room(start_room, player);
+
+   // game loop starts
+     while (game_running) {
         dungeon.printMap();
-        cout << "\nYour move: ";
+        player.showStats();
+
+        cout << "\nCommands: up / down / left / right (or u/d/l/r). Type 'quit' to exit.\n\n";
+        writer_print("Your move: ", false, false);
+
+        string command;
         cin >> command;
 
+        // quit
         if (command == "quit" || command == "q") {
-            cout << "Goodbye!\n";
+            writer_print("You flee the dungeon. Coward");
+            game_running = false;
             break;
         }
 
-        bool success = dungeon.movePlayer(command);
-        if (!success) {
-            cout << "Please try again.\n";
+        // move player
+        bool moved = dungeon.movePlayer(command);
+        if (!moved) continue;
+
+        // get current room
+         int px = dungeon.getPlayer().playerX;
+         int py = dungeon.getPlayer().playerY;
+         Room& current_room = dungeon.getRoom(px, py);
+
+        // handle room
+        switch (current_room.type) {
+            case START:
+                enter_start_room(current_room, player);
+                break;
+
+            case NOTHING:
+                enter_empty_room(current_room, player);
+                break;
+
+            case KEY:
+                enter_key_room(current_room, player.key_count, room_grid, size, px, py, player);
+                // if escape was just revealed, tell the map
+                for (int y = 0; y < size; y++) {
+                    for (int x = 0; x < size; x++) {
+                        if (room_grid[y][x].type == ESCAPE && !room_grid[y][x].revealed) {
+                            dungeon.setEscapeRoom(x, y);
+                        }
+                    }
+                }
+                break;
+
+            case CHEST:
+                enter_chest_room(current_room, player);
+                break;
+
+            case ENEMY: {
+                Enemy* enemy = generateEnemy(player.kill_count);
+                combatRoom(player, enemy);
+                delete enemy;
+
+                if (player.HP <= 0) {
+                    game_running = false;
+                }
+                current_room.revealed = true;
+                break;
+            }
+
+            case ESCAPE:
+                enter_escape_room(current_room);
+                player_won = true;
+                game_running = false;
+                break;
         }
-        cout << endl;
+
+        // check dropped items after any room entry (except mirror warning rooms)
+        if (game_running && !current_room.has_warning) {
+            if (!current_room.dropped_weapons.empty() || !current_room.dropped_healings.empty()) {
+                check_room_for_items(current_room, player);
+            }
+        }
+        cout << "\n";
     }
+
+    // ---- Game Over ----
+    if (player_won) {
+        scene_break();
+        writer_print("    YOU ESCAPED!    ");
+        scene_break();
+    }
+    else if (player.HP <= 0) {
+        scene_break();
+        writer_print("    YOU DIED!    ");
+        scene_break();
+    }
+
+    cout << "\nFinal Stats:\n";
+    cout << "  Attack: " << player.playerAttack << "\n";
+    cout << "  HP:     " << player.HP << "/" << player.maxHP << "\n";
+    cout << "  Keys:   " << player.key_count << "/3" << "\n";
+    cout << "  Kills:  " << player.kill_count << "\n";
+    cout << "\n";
+
+
 
     return 0;
 }
