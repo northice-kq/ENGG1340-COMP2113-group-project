@@ -1,11 +1,16 @@
 #ifndef ENTITIES_H
 #define ENTITIES_H
 
-#include "../player/player.h"
 #include <iostream>
 #include <string>
 
 using namespace std;
+
+struct player{
+    int hp;
+    int attack;
+    int killcnt;
+};
 
 //parent class of enemy
 class Enemy{
@@ -18,7 +23,7 @@ public:
     Enemy(int h, int a, string name);
     
     void takedamage(int damage);
-    virtual int attackAction();
+    void printEnemyDescription();
     virtual int attackAction(int l);
     virtual bool attemptDodge() {
         return false;
@@ -39,10 +44,10 @@ public:
     double sneakRate;
     bool sneaked;
     Assassin(int h, int att, string name);
-    int attackAction() override;
+    int attackAction(int l) override;
     bool attemptDodge() override;
 };
 
-Enemy* generateEnemy(int killcnt);
+Enemy* generateEnemy(int killcnt, bool isHard);
 
 #endif
