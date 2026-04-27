@@ -27,7 +27,7 @@ void combatRoom(Player &p1, Enemy* currentEnemy, bool isHard) {
             cout << "Type your choice here: ";
             cin >> choice;
             if (choice == "attack"){
-                p1.showWeapons();
+                p1.showWeapons(true);
                 this_thread::sleep_for(chrono::milliseconds(1000));
                 cout << "Which weapon do you want to use? Type the number: ";
                 int weaponchoice;
