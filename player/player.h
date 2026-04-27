@@ -8,6 +8,7 @@
 struct Player {
     int HP;
     int maxHP;
+    int playerAttack;
     int key_count;
     int kill_count;
     int weaponCap;

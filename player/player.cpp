@@ -7,7 +7,7 @@
 
 Player::Player(bool is_hard_difficulty)
     : // constructor
-      HP(100), maxHP(100), key_count(0), kill_count(0),
+      HP(100), maxHP(100), playerAttack(5), key_count(0), kill_count(0),
       weaponCap(is_hard_difficulty ? 2 : 1),   // can change this later
       healingCap(is_hard_difficulty ? 5 : 10), // can change this later
       weaponsInv({new Fist()}) {}
@@ -40,6 +40,7 @@ int Player::attackEnemy(int index) {
     if (index < 0 || index >= weaponsInv.size())
         index = 0; // use fist if invalid index but someone please validate
     int damage = weaponsInv[index]->useWeapon();
+    damage += playerAttack;
     std::cout << "Player deal " << damage << " damage\n";
     return damage;
 }
@@ -101,6 +102,7 @@ void Player::showHealings() {
 }
 void Player::showStats() {
     std::cout << "HP            : " << HP << '/' << maxHP << std::endl;
+    std::cout << "Player attack : " << playerAttack << std::endl;
     std::cout << "Collected keys: " << key_count << "/3" << std::endl;
     std::cout << "Kill count    : " << kill_count << std::endl;
 }
