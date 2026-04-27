@@ -33,10 +33,9 @@ void combatRoom(Player &p1, Enemy* currentEnemy) {
                     cin.clear(); cin.ignore(1000, '\n');
                     continue;
                 }
-                p1.current_weapon = p1.weaponsInv[weaponchoice];
-                p1.attackEnemy();
+                int damage = p1.attackEnemy(weaponchoice - 1);
                 if (!(currentEnemy->attemptDodge())){
-                    currentEnemy->hp -= p1.attack;
+                    currentEnemy->hp -= damage;
                 }
                 
             } else if (choice == 2){
@@ -48,7 +47,7 @@ void combatRoom(Player &p1, Enemy* currentEnemy) {
                     cin.clear(); cin.ignore(1000, '\n');
                     continue;
                 }
-                p1.useHealing(healingchoice);
+                p1.useHealing(healingchoice - 1);
             }
             else{
                 cout << "Invalid input, please try again." << endl;

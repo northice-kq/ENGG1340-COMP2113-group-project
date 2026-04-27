@@ -8,25 +8,25 @@
 struct Player {
     int HP;
     int maxHP;
-    int attack;
     int key_count;
     int kill_count;
     int weaponCap;
     int healingCap;
-    Weapon* current_weapon;
     std::vector<Weapon*> weaponsInv;
     std::vector<Healing*> healingsInv;
 
     Player(bool is_hard_difficulty);
     bool pickupWeapon(Weapon* weapon);
     bool discardWeapon(int index);
-    int attackEnemy();
+    int attackEnemy(int index);
     bool pickupHealings(Healing* healing);
     bool discardHealings(int index);
     bool useHealing(int index);
     void showWeapons();
     void showHealings();
     void showStats();
+    void showWeaponDescription(int index);
+    void showHealingDescription(int index);
 };
 
 #endif

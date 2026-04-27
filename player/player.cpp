@@ -7,13 +7,10 @@
 
 Player::Player(bool is_hard_difficulty)
     : // constructor
-      HP(100), maxHP(100), attack(2), key_count(0), kill_count(0),
-      weaponCap(is_hard_difficulty ? 2 : 1),  // can change this later
-      healingCap(is_hard_difficulty ? 5 : 10) // can change this later
-{
-    weaponsInv.emplace_back(new Fist());
-    current_weapon = weaponsInv[0];
-}
+      HP(100), maxHP(100), key_count(0), kill_count(0),
+      weaponCap(is_hard_difficulty ? 2 : 1),   // can change this later
+      healingCap(is_hard_difficulty ? 5 : 10), // can change this later
+      weaponsInv({new Fist()}) {}
 
 bool Player::pickupWeapon(Weapon* weapon) {
     // no checking same weapon here, someone please implement
@@ -33,16 +30,16 @@ bool Player::discardWeapon(int index) {
     // do not allow delete fist
     if (index > 0 && index < weaponsInv.size()) {
         std::vector<Weapon*>::iterator it = weaponsInv.begin() + index;
-        delete *it;
         weaponsInv.erase(it);
         return true;
     }
     return false;
 }
 
-int Player::attackEnemy() {
-    int damage = current_weapon->useWeapon();
-    damage += attack;
+int Player::attackEnemy(int index) {
+    if (index < 0 || index >= weaponsInv.size())
+        index = 0; // use fist if invalid index but someone please validate
+    int damage = weaponsInv[index]->useWeapon();
     std::cout << "Player deal " << damage << " damage\n";
     return damage;
 }
@@ -64,7 +61,6 @@ bool Player::pickupHealings(Healing* healing) {
 bool Player::discardHealings(int index) {
     if (index >= 0 && index < healingsInv.size()) {
         std::vector<Healing*>::iterator it = healingsInv.begin() + index;
-        delete *it;
         healingsInv.erase(it);
         return true;
     }
@@ -104,7 +100,17 @@ void Player::showHealings() {
     }
 }
 void Player::showStats() {
-    std::cout << "HP: " << HP << "\n";
-    std::cout << "Attack: " << attack << "\n";
-    std::cout << "Keys: " << key_count << "\n";
+    std::cout << "HP            : " << HP << '/' << maxHP << std::endl;
+    std::cout << "Collected keys: " << key_count << "/3" << std::endl;
+    std::cout << "Kill count    : " << kill_count << std::endl;
+}
+void Player::showWeaponDescription(int index) {
+    if (index >= 0 && index < weaponsInv.size()) {
+        weaponsInv[index]->printDescription();
+    }
+}
+void Player::showHealingDescription(int index) {
+    if (index >= 0 && index < healingsInv.size()) {
+        healingsInv[index]->printDescription();
+    }
 }
