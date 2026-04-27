@@ -38,9 +38,8 @@ void combatRoom(Player &p1, Enemy* currentEnemy, bool isHard) {
                 }
                 cout << endl;
                 this_thread::sleep_for(chrono::milliseconds(1000));
-                p1.current_weapon = p1.weaponsInv[weaponchoice-1];
                 if (!(currentEnemy->attemptDodge())){
-                    currentEnemy->hp -= p1.attackEnemy();
+                    currentEnemy->hp -= p1.attackEnemy(weaponchoice);
                 }
                 else{ cout << "The assassin dodged your attack! Attack failed" << endl; }
                 cout << "Remaining hp of the enemy: " << ((currentEnemy->hp < 0 )? 0 : currentEnemy->hp) << endl;
@@ -64,7 +63,7 @@ void combatRoom(Player &p1, Enemy* currentEnemy, bool isHard) {
                 p1.useHealing(healingchoice);
             }
             else if (choice == "show"){
-                p1.showWeapons();
+                p1.showWeapons(true);
                 p1.showHealings();
                 this_thread::sleep_for(chrono::milliseconds(1000));
             }
@@ -83,12 +82,12 @@ void combatRoom(Player &p1, Enemy* currentEnemy, bool isHard) {
             int Attackreward = rand() % 3 + 3;
             p1.HP += HPreward;
             p1.maxHP += HPreward;
-            p1.attack += Attackreward;
+            p1.playerAttack += Attackreward;
             p1.kill_count++;
             
             cout << "Player stat: " << endl;
             cout << left << setw(9) << "Health: " << p1.HP-HPreward << '/' << p1.maxHP-HPreward << "->" << p1.HP << '/' << p1.maxHP << endl;
-            cout << left << setw(9) << "Attack: " << p1.attack-Attackreward << "->" << p1.attack << endl;
+            cout << left << setw(9) << "Attack: " << p1.playerAttack-Attackreward << "->" << p1.playerAttack << endl;
             cout << "You have killed " << p1.kill_count << " enemies." << endl;
             
             return; // end battle
@@ -110,8 +109,8 @@ void combatRoom(Player &p1, Enemy* currentEnemy, bool isHard) {
         else {
             int roll = rand() % 100;
             if (roll < (isHard? 30:50)){
-                if (!Dodge()) p1.HP -= currentEnemy->attackAction(lane);
-                //p1.HP -= currentEnemy->attackAction(lane);
+                //if (!Dodge()) p1.HP -= currentEnemy->attackAction(lane);
+                p1.HP -= currentEnemy->attackAction(lane);
                 this_thread::sleep_for(chrono::milliseconds(500));
             }
             else p1.HP -= currentEnemy->attackAction(lane);
