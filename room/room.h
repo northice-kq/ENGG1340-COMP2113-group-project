@@ -1,5 +1,6 @@
 #ifndef ROOM_H
 #define ROOM_H
+#include "../player/player.h"
 #include "../weapons/weapon.h"
 #include "../healings/healing.h"
 #include <vector>
@@ -60,14 +61,14 @@ vector<vector<Room>> assign_rooms(int size);
 // What it does: Handles the player entering every different types of rooms
 void enter_start_room(Room& room, Player& player);
 void enter_empty_room(Room& room, Player& player);
-void enter_key_room(Room& room, int& keys_collected, vector<vector<Room>>& grid, int size, int player_x, int player_y, Player& player);
+void enter_key_room(Room& room, vector<vector<Room>>& grid, Player& player);
 void enter_chest_room(Room& room, Player& player);
 void enter_escape_room(Room& room);
 
 // What it does: generate escape room when a player obtained 3 keys.
 //              the square that the player currently on, the starting square, the adjacent squares cannot be the escape room
 //              output modifies the grid
-void reveal_escape_room(vector<vector<Room>>& grid, int size, int player_x, int player_y);
+void reveal_escape_room(vector<vector<Room>>& grid, Player& player);
 
 // What it does: Drops a weapon into the room. Called when player discards a weapon or when chest reward is rejected due to full cap
 

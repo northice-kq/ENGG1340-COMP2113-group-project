@@ -164,7 +164,7 @@ void enter_empty_room(Room& room, Player& player) {
 //              if not, marks it collected,
 //              At 3 keys, prints a special message signaling the escape room is now available and past to func
 
-void enter_key_room(Room& room, int& keys_collected, vector<vector<Room>>& grid, int size, int player_x, int player_y, Player& player) {
+void enter_key_room(Room& room, vector<vector<Room>>& grid, Player& player) {
     room.revealed = true;
     scene_break();
 
@@ -180,10 +180,10 @@ void enter_key_room(Room& room, int& keys_collected, vector<vector<Room>>& grid,
 
     // Pick up the key
     room.key_collected = true;
-    keys_collected++;
+    player.key_count++;
 
     // Pick a random key description
-    if (keys_collected <= 2) {
+    if (player.key_count <= 2) {
         string key_texts[] = {
             "A rusty iron key hangs from a hook on the wall",
             "You spot a wooden key lie on a wet puddle",
@@ -210,18 +210,18 @@ void enter_key_room(Room& room, int& keys_collected, vector<vector<Room>>& grid,
     this_thread::sleep_for(chrono::milliseconds(200));
 
     // Print progress
-    string progress = "Key collected! (" + to_string(keys_collected) + "/3)";
+    string progress = "Key collected! (" + to_string(player.key_count) + "/3)";
     writer_print(progress);
 
     // Special message when the player has all 3 keys
-    if (keys_collected == 1) {
+    if (player.key_count == 1) {
         writer_print("Two more keys and you may find the way out");
     }
-    else if (keys_collected == 2) {
+    else if (player.key_count == 2) {
         writer_print("One more key remains hidden in the dungeon");
     }
-    else if (keys_collected == 3) {
-        reveal_escape_room(grid, size, player_x, player_y);
+    else if (player.key_count == 3) {
+        reveal_escape_room(grid, player);
     }
 }
 
@@ -502,22 +502,22 @@ void enter_chest_room(Room& room, Player& player) {
 // What it does: generate escape room when a player obtained 3 keys.
 //              the square that the player currently on, the starting square, the adjacent squares cannot be the escape room
 //              output modifies the grid
-void reveal_escape_room(vector<vector<Room>>& grid, int size, int player_x, int player_y) {
+void reveal_escape_room(vector<vector<Room>>& grid, const Player& player) {
     // build list of valid coordinates, exc. start & current & adjacent square
     vector<pair<int, int>> valid;
-    for (int y = 0; y < size; y++) {
-        for (int x = 0; x < size; x++) {
+    for (int y = 0; y < grid.size(); y++) {
+        for (int x = 0; x < grid.size(); x++) {
             // Skip starting sq
             if (x == 0 && y == 0) continue;
 
             // skip player position
-            if (x == player_x && y == player_y) continue;
+            if (x == player.playerX && y == player.playerY) continue;
 
             // skip adjacent rooms
-            if (x == player_x && y == player_y - 1) continue; // up
-            if (x == player_x && y == player_y + 1) continue; // down
-            if (x == player_x - 1 && y == player_y) continue; // left
-            if (x == player_x + 1 && y == player_y) continue; // right
+            if (x == player.playerX && y == player.playerY - 1) continue; // up
+            if (x == player.playerX && y == player.playerY + 1) continue; // down
+            if (x == player.playerX - 1 && y == player.playerY) continue; // left
+            if (x == player.playerX + 1 && y == player.playerY) continue; // right
 
             valid.push_back({x, y});
         }
