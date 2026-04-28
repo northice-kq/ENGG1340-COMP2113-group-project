@@ -33,10 +33,10 @@ int Mage::attackAction(int l){
     int lane;
     lane = rand() % 3 + 1;
     if (l == lane){
-        cout << "Mage casts a magic spell! Dealing " << attack << " damage." << endl;
         int newatt;
         newatt = attack * (streak * 0.5 + 1);
         streak ++;
+        cout << "Mage casts a magic spell! Dealing " << newatt << " damage." << endl;
         return newatt;
     }
     else{
@@ -50,9 +50,10 @@ Mage::Mage(int h, int att, string n): Enemy(h, att, n) {}
 // --- Assassin Implementation ---
 int Assassin::attackAction(int l) {
     if (sneaked){
-        cout << "Dealing " << attack << " damage." << endl;
+        int newatt = attack * 1.5;
+        cout << "Dealing " << newatt << " damage." << endl;
         sneaked = false;
-        return attack*1.5;
+        return newatt;
     }
     else{
         cout << "Dealing " << attack << " damage." << endl;
