@@ -4,7 +4,6 @@
 #include "../weapons/weapon.h"
 #include "../healings/healing.h"
 #include <vector>
-#include <vector>
 using namespace std;
 // What it does: Defines the Room_Type enum and Room struct for the dungeon crawler.
 //              Each room has a type, coordinate position, and flags to track
@@ -66,6 +65,7 @@ void enter_empty_room(Room& room, Player& player);
 void enter_key_room(Room& room, int& keys_collected, vector<vector<Room>>& grid, int size, int player_x, int player_y, Player& player);
 void enter_chest_room(Room& room, Player& player);
 void enter_escape_room(Room& room);
+void enter_combat_room(Room& room, Player& player, bool is_hard);
 
 // What it does: generate escape room when a player obtained 3 keys.
 //              the square that the player currently on, the starting square, the adjacent squares cannot be the escape room
