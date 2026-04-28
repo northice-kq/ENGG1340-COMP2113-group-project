@@ -1,5 +1,5 @@
 #include "room/Map.h"
-#include <iostream>
+
 #include <string>
 
 #include <iostream>
@@ -42,84 +42,100 @@ int main() {
 
    // game loop starts
      while (game_running) {
-        dungeon.printMap();
-        player.showStats();
+         dungeon.printMap();
+         player.showStats();
 
-        cout << "\nCommands: up / down / left / right (or u/d/l/r). Type 'quit' to exit.\n\n";
-        writer_print("Your move: ", false, false);
+         cout << "\nCommands: up / down / left / right (or u/d/l/r). Type 'quit' to exit.\n\n";
+         string command;
 
-        string command;
-        cin >> command;
+         while (true) {
+             writer_print("Your move: ", false, false);
+             cin >> command;
 
-        // quit
-        if (command == "quit" || command == "q") {
-            writer_print("You flee the dungeon. Coward");
-            game_running = false;
-            break;
-        }
+             // quit
+             if (command == "quit" || command == "q" || command == "Quit") {
+                 writer_print("You flee the dungeon. Coward");
+                 game_running = false;
+                 break;
+             }
 
-        // move player
-        bool moved = dungeon.movePlayer(command);
-        if (!moved) continue;
+             // valid input
+             if (command == "up" || command == "u" || command == "Up" || command == "UP" ||
+                 command == "down" || command == "d" || command == "Down" || command == "DOWN" ||
+                 command == "left" || command == "l" || command == "Left" || command == "LEFT" ||
+                 command == "right" || command == "r" || command == "Right" || command == "RIGHT") {
 
-        // get current room
-         int px = dungeon.getPlayer().playerX;
-         int py = dungeon.getPlayer().playerY;
-         Room& current_room = dungeon.getRoom(px, py);
-
-        // handle room
-        switch (current_room.type) {
-            case START:
-                enter_start_room(current_room, player);
-                break;
-
-            case NOTHING:
-                enter_empty_room(current_room, player);
-                break;
-
-            case KEY:
-                enter_key_room(current_room, player.key_count, room_grid, size, px, py, player);
-                // if escape was just revealed, tell the map
-                for (int y = 0; y < size; y++) {
-                    for (int x = 0; x < size; x++) {
-                        if (room_grid[y][x].type == ESCAPE && !room_grid[y][x].revealed) {
-                            dungeon.setEscapeRoom(x, y);
-                        }
-                    }
-                }
-                break;
-
-            case CHEST:
-                enter_chest_room(current_room, player);
-                break;
-
-            case ENEMY: {
-                Enemy* enemy = generateEnemy(player.kill_count);
-                combatRoom(player, enemy);
-                delete enemy;
-
-                if (player.HP <= 0) {
-                    game_running = false;
-                }
-                current_room.revealed = true;
-                break;
+             // if it fails (out of bounds), ask again
+             if (dungeon.movePlayer(command)) {
+                 break; // success
+             }
+             // movePlayer already printed the error message
+                continue; //ask for input again
             }
+             // Invalid — clear and retry without reprinting map
+             writer_print("Invalid command! Use: up/down/left/right (or u/d/l/r), quit (q)",false);
+             cin.clear();
+             cin.ignore(numeric_limits<streamsize>::max(), '\n');
+         }
 
-            case ESCAPE:
-                enter_escape_room(current_room);
-                player_won = true;
-                game_running = false;
-                break;
-        }
+         if (!game_running) break; // player quit
+
+         // get current room
+          int px = dungeon.getPlayer().playerX;
+          int py = dungeon.getPlayer().playerY;
+         Room& current_room = room_grid[py][px];
+
+         // handle room
+         switch (current_room.type) {
+             case START:
+                 enter_start_room(current_room, player);
+                 break;
+
+             case NOTHING:
+                 enter_empty_room(current_room, player);
+                 break;
+
+             case KEY:
+                 enter_key_room(current_room, player.key_count, room_grid, size, px, py, player);
+                 // if escape was just revealed, tell the map
+                 for (int y = 0; y < size; y++) {
+                     for (int x = 0; x < size; x++) {
+                         if (room_grid[y][x].type == ESCAPE && !room_grid[y][x].revealed) {
+                             dungeon.setEscapeRoom(x, y);
+                         }
+                     }
+                 }
+                 break;
+
+             case CHEST:
+                 enter_chest_room(current_room, player);
+                 break;
+
+             case ENEMY: {
+                 enter_combat_room(current_room, player, is_hard);
+
+                 if (player.HP <= 0) {
+                     game_running = false;
+                 }
+                 break;
+             }
+
+             case ESCAPE:
+                 enter_escape_room(current_room);
+                 player_won = true;
+                 game_running = false;
+                 break;
+         }
 
         // check dropped items after any room entry (except mirror warning rooms)
-        if (game_running && !current_room.has_warning) {
-            if (!current_room.dropped_weapons.empty() || !current_room.dropped_healings.empty()) {
-                check_room_for_items(current_room, player);
-            }
-        }
-        cout << "\n";
-    }
+         if (game_running && !current_room.has_warning) {
+             if (!current_room.dropped_weapons.empty() || !current_room.dropped_healings.empty()) {
+                 check_room_for_items(current_room, player);
+             }
+         }
+
+         cout << "\n";
+     }
 
     // ---- Game Over ----
     if (player_won) {
