@@ -59,7 +59,7 @@ bool Dodge() {
     const int LINE_LENGTH = 40;
     const int BRACKET_START = 17;
     const int BRACKET_END = 21;
-    const int FRAME_DELAY_MS = 80;
+    const int FRAME_DELAY_MS = rand() % 40 + 40; // random dodging speed
     const int FLASH_DELAY_MS = 500;
     
     // Display initial header and line
