@@ -56,14 +56,13 @@ void combatRoom(Player &p1, Enemy* currentEnemy, bool isHard) {
                 }
                 p1.showHealings();
                 int healingchoice;
-                cin >> healingchoice;
                 cout << "Which healing tool do you want to use? Type the number: ";
                 while (!(cin >> healingchoice) || healingchoice > p1.healingsInv.size()) {
                     cout << "Please enter a valid number." << endl;
                     cin.clear(); cin.ignore(1000, '\n');
                     continue;
                 }
-                p1.useHealing(healingchoice);
+                p1.useHealing(healingchoice-1);
             }
             else if (choice == "show"){
                 p1.showWeapons(true);
