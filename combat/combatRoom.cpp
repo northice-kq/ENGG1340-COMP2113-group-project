@@ -100,7 +100,7 @@ void combatRoom(Player &p1, Enemy* currentEnemy, bool isHard) {
         if (currentEnemy->name == "Mage"){
             cout << "The mage will attack on of the three lanes, type '1','2', or '3' to dodge the attack! " << endl;
             cout << "Enter your choice: ";
-            while (!(cin >> lane) || lane > 3) {
+            while (!(cin >> lane) || lane < 1 || lane > 3) {
                 cout << "Please enter a valid number." << endl;
                 cin.clear(); cin.ignore(1000, '\n');
             }
@@ -115,6 +115,9 @@ void combatRoom(Player &p1, Enemy* currentEnemy, bool isHard) {
             }
             else p1.HP -= currentEnemy->attackAction(lane);
             this_thread::sleep_for(chrono::milliseconds(500));
+        }
+        if (p1.HP <= 0) {
+            p1.HP = 0;
         }
         cout << "Your HP: " << p1.HP << endl;
         this_thread::sleep_for(chrono::milliseconds(1500));
