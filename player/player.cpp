@@ -110,7 +110,7 @@ void Player::showStats() {
     oss << "Player attack : " << playerAttack << '\n';
     oss << "Collected keys: " << key_count << "/3\n";
     oss << "Kill count    : " << kill_count << '\n';
-    writer_print(oss.str(), false, false);
+    writer_print(oss.str(), false, false, 5);
 }
 void Player::showWeaponDescription(int index) {
     if (index >= 0 && index < weaponsInv.size()) {

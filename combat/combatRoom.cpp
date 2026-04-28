@@ -39,7 +39,7 @@ void combatRoom(Player &p1, Enemy* currentEnemy, bool isHard) {
                 cout << endl;
                 this_thread::sleep_for(chrono::milliseconds(1000));
                 if (!(currentEnemy->attemptDodge())){
-                    currentEnemy->hp -= p1.attackEnemy(weaponchoice);
+                    currentEnemy->hp -= p1.attackEnemy(weaponchoice - 1);
                 }
                 else{ cout << "The assassin dodged your attack! Attack failed" << endl; }
                 cout << "Remaining hp of the enemy: " << ((currentEnemy->hp < 0 )? 0 : currentEnemy->hp) << endl;
