@@ -1,6 +1,6 @@
 #include "weapon.h"
+#include "../output_text/output_text.h"
 #include <climits>
-#include <iostream>
 #include <sstream>
 #include <string>
 
@@ -42,7 +42,7 @@ int Fist::useWeapon() {
     int damage = baseDamage;
     if (rand() % critHitRate == 0) {
         damage *= 2;
-        std::cout << "Critical hit!" << std::endl;
+        writer_print("Critical hit!", false);
     }
     return damage;
 }
@@ -52,7 +52,7 @@ Sword::Sword(int durability)
 
 int Sword::useWeapon() {
     if (durability == 0) {
-        std::cout << "Your weapon has no durability!" << std::endl;
+        writer_print("Your weapon has no durability!", false);
         return 0;
     }
     // upgrading a level increases 20% damage
@@ -61,7 +61,7 @@ int Sword::useWeapon() {
     damage -= (100 - durability) / 20;
     if (rand() % critHitRate == 0) {
         damage *= 2;
-        std::cout << "Critical hit!" << std::endl;
+        writer_print("Critical hit!", false);
     }
     durability--;
     return damage;
@@ -73,14 +73,14 @@ Axe::Axe(int durability)
 
 int Axe::useWeapon() {
     if (durability == 0) {
-        std::cout << "Your weapon has no durability!" << std::endl;
+        writer_print("Your weapon has no durability!", false);
         return 0;
     }
     // upgrading a level increases 20% damage
     int damage = baseDamage;
     if (rand() % critHitRate == 0) {
         damage *= 2;
-        std::cout << "Critical hit!" << std::endl;
+        writer_print("Critical hit!", false);
     }
     durability--;
     return damage;
@@ -93,12 +93,13 @@ CalculatorGun::CalculatorGun(int durability)
 int CalculatorGun::useWeapon() {
     // shoots out 5 random numbers from 1 to 8
     int damage = baseDamage;
-    std::cout << "Shooted numbers:";
+    std::ostringstream oss;
+    oss << "Shooted numbers:";
     for (int i = 0; i < 5; i++) {
         int x = rand() % 8 + 1;
-        std::cout << ' ' << x;
+        oss << ' ' << x;
         damage += x;
     }
-    std::cout << std::endl;
+    writer_print(oss.str(), false);
     return damage;
 }

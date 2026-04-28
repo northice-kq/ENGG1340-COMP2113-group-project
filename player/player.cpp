@@ -1,8 +1,9 @@
 #include "player.h"
 #include "../healings/healing.h"
+#include "../output_text/output_text.h"
 #include "../weapons/weapon.h"
 #include <algorithm> // we should sort the healing inventory
-#include <iostream>
+#include <sstream>
 #include <vector>
 
 Player::Player(bool is_hard_difficulty)
@@ -38,7 +39,9 @@ int Player::attackEnemy(int index) {
         index = 0; // use fist if invalid index but someone please validate
     int damage = weaponsInv[index]->useWeapon();
     damage += playerAttack;
-    std::cout << "Player deal " << damage << " damage\n";
+    std::ostringstream oss;
+    oss << "Player deal " << damage << " damage";
+    writer_print(oss.str(), false);
     return damage;
 }
 
@@ -64,7 +67,7 @@ bool Player::discardHealings(int index) {
 
 bool Player::useHealing(int index) {
     if (healingsInv.empty()) {
-        std::cout << "No healing items!\n";
+        writer_print("No healing items!", false);
         return false;
     }
     if (index < 0 || index >= healingsInv.size())
@@ -72,41 +75,46 @@ bool Player::useHealing(int index) {
     std::vector<Healing*>::iterator it = healingsInv.begin() + index;
     bool success = (*it)->healPlayer(HP, maxHP);
     if (success) {
-        std::cout << "Player HP is now " << HP << std::endl;
+        std::ostringstream oss;
+        oss << "Player HP is now " << HP;
+        writer_print(oss.str(), false);
         delete *it;
         healingsInv.erase(it);
         return true;
     } else {
-        std::cout << "Healing failed.\n";
+        writer_print("Healing failed.", false);
         return false;
     }
 }
 
 void Player::showWeapons(bool showFist) {
+    std::ostringstream oss;
     if (showFist) {
         for (int i = 0; i < weaponsInv.size(); i++)
-            std::cout << i + 1 << ". " << weaponsInv[i]->shortDescription()
-                      << std::endl;
+            oss << i + 1 << ". " << weaponsInv[i]->shortDescription() << '\n';
     } else {
         for (int i = 1; i < weaponsInv.size(); i++)
-            std::cout << i << ". " << weaponsInv[i]->shortDescription()
-                      << std::endl;
+            oss << i << ". " << weaponsInv[i]->shortDescription() << '\n';
     }
+    writer_print(oss.str(), false, false);
 }
 void Player::showHealings() {
-    for (int i = 0; i < healingsInv.size(); i++) {
-        std::cout << i + 1 << ". " << healingsInv[i]->name << std::endl;
-    }
+    std::ostringstream oss;
+    for (int i = 0; i < healingsInv.size(); i++)
+        oss << i + 1 << ". " << healingsInv[i]->name << '\n';
+    writer_print(oss.str(), false, false);
 }
 void Player::showStats() {
-    std::cout << "HP            : " << HP << '/' << maxHP << std::endl;
-    std::cout << "Player attack : " << playerAttack << std::endl;
-    std::cout << "Collected keys: " << key_count << "/3" << std::endl;
-    std::cout << "Kill count    : " << kill_count << std::endl;
+    std::ostringstream oss;
+    oss << "HP            : " << HP << '/' << maxHP << '\n';
+    oss << "Player attack : " << playerAttack << '\n';
+    oss << "Collected keys: " << key_count << "/3\n";
+    oss << "Kill count    : " << kill_count << '\n';
+    writer_print(oss.str(), false, false);
 }
 void Player::showWeaponDescription(int index) {
     if (index >= 0 && index < weaponsInv.size()) {
-        std::cout << weaponsInv[index]->longDescription();
+        writer_print(weaponsInv[index]->longDescription(), false, false);
     }
 }
 void Player::showHealingDescription(int index) {

@@ -1,18 +1,18 @@
 #include "healing.h"
-#include <iostream>
+#include "../output_text/output_text.h"
 #include <string>
 
 Healing::Healing(std::string name, std::string description)
     : name(name), description(description) {}
 
 void Healing::printDescription() const {
-    std::cout << name << ": " << description << std::endl;
+    writer_print(name + ": " + description, false);
 }
 
 bool Healing::healPlayer(int& HP, int maxHP) {
     int finalHP = getFinalHP(HP, maxHP);
     if (finalHP == -1) {
-        std::cout << name << " cannot heal you further!" << std::endl;
+        writer_print(name + " cannot heal your further!", false);
         return false;
     } else {
         HP = finalHP;

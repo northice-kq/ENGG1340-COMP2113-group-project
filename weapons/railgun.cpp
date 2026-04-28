@@ -1,8 +1,10 @@
 // more complicated mechanics so put in a separate file
+#include "../output_text/output_text.h"
 #include "weapon.h"
 #include <chrono>
 #include <fcntl.h> // file control
 #include <iostream>
+#include <sstream>
 #include <termios.h> // for instant key responds
 #include <thread>
 #include <unistd.h> //unix
@@ -17,8 +19,9 @@ int Railgun::useWeapon() {
     const int linewidth = width * (maxBonus * 2 + 1);
     // delay: 20 to 40 ms
     const int delay = rand() % 21 + 20;
-    std::cout << "Press space bar when the power level reaches " << maxBonus
-              << '!' << std::endl;
+    std::ostringstream oss;
+    oss << "Press space bar when the power level reaches " << maxBonus << '!';
+    writer_print(oss.str(), false);
     { // setNonBlocking(true)
         termios ttystate;
         tcgetattr(STDIN_FILENO, &ttystate);
@@ -64,8 +67,9 @@ int Railgun::useWeapon() {
         ttystate.c_lflag |= ECHO;
         tcsetattr(STDIN_FILENO, TCSANOW, &ttystate);
     }
-    std::cout << "Your railgun has charged to power level " << bonus
-              << std::endl;
+    oss.str("");
+    oss << "Your railgun has charged to power level " << bonus;
+    writer_print(oss.str(), false);
     damage += bonus * 3;
     return damage;
 }
