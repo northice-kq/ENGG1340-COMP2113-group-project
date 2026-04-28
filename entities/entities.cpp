@@ -45,7 +45,7 @@ int Mage::attackAction(int l){
         return 0;
     }
 }
-Mage::Mage(int h, int att, string n): Enemy(h, att, n) {}
+Mage::Mage(int h, int att, string n): Enemy(h, att, n) , streak(0) {}
 
 // --- Assassin Implementation ---
 int Assassin::attackAction(int l) {
