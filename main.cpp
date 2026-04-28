@@ -141,12 +141,12 @@ int main() {
     // ---- Game Over ----
     if (player_won) {
         scene_break();
-        writer_print("    YOU ESCAPED!    ");
+        writer_print("    YOU ESCAPED!    ", false);
         scene_break();
     }
     else if (player.HP <= 0) {
         scene_break();
-        writer_print("    YOU DIED!    ");
+        writer_print("    YOU DIED!    ", false);
         scene_break();
     }
 
