@@ -63,6 +63,7 @@ void combatRoom(Player &p1, Enemy* currentEnemy, bool isHard) {
                     continue;
                 }
                 p1.useHealing(healingchoice-1);
+                cout << "Now you have" << p1.HP << "/" << p1.maxHP << " HP." << endl;
             }
             else if (choice == "show"){
                 p1.showWeapons(true);
