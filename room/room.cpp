@@ -1,5 +1,7 @@
 #include "room.h"
 #include "../output_text/output_text.h"
+#include "combatRoom.h"
+#include "entities.h"
 #include <iostream>
 #include <thread>
 #include <chrono>
@@ -119,6 +121,7 @@ void enter_empty_room(Room& room, Player& player) {
         writer_print("...smiling", false);
         this_thread::sleep_for(chrono::milliseconds(1000));
         writer_print("Just leave");
+        press_enter_to_continue();
         return;
     }
 
@@ -148,6 +151,7 @@ void enter_empty_room(Room& room, Player& player) {
         writer_print("You blink");
         writer_print(("'It' didn't"));
         writer_print("I suggest you to leave this room as fast as possible");
+        press_enter_to_continue();
     }
     else {
         // 20% chance: player finds a brief rest spot
@@ -159,6 +163,7 @@ void enter_empty_room(Room& room, Player& player) {
             // This just signals the player found a rest spot
         }
         writer_print("This room is empty. Please move on to the next room");
+        press_enter_to_continue();
     }
 }
 
@@ -177,6 +182,7 @@ void enter_key_room(Room& room, int& keys_collected, vector<vector<Room>>& grid,
     if (room.key_collected) {
         // room is now just an empty room cuz key is taken
         writer_print("You have already taken the key from this room");
+        press_enter_to_continue();
         return;
     }
 
@@ -225,6 +231,7 @@ void enter_key_room(Room& room, int& keys_collected, vector<vector<Room>>& grid,
     else if (keys_collected == 3) {
         reveal_escape_room(grid, size, player_x, player_y);
     }
+    press_enter_to_continue();
 }
 
 
@@ -247,6 +254,7 @@ void enter_chest_room(Room& room, Player& player) {
     // Already looted
     if (room.chest_looted) {
         writer_print("The chest lies open and empty, its treasure long taken");
+        press_enter_to_continue();
 
         if (!room.dropped_weapons.empty() || !room.dropped_healings.empty()) {
             writer_print("You notice something on the floor...");
@@ -307,7 +315,6 @@ void enter_chest_room(Room& room, Player& player) {
         bool success = player.pickupHealings(new_healing);
         if (!success) {
             writer_print("But your healing inventory is full!");
-            writer_print("You leave it behind reluctantly");
             drop_healing_in_room(room, new_healing);
         }
 
@@ -435,7 +442,6 @@ void enter_chest_room(Room& room, Player& player) {
             bool success = player.pickupWeapon(new_weapon);
             if (!success) {
                 writer_print("But your weapon inventory is full!");
-                writer_print("The " + chosen + " slips from your hands");
                 writer_print("Consider discarding a weapon");
                 drop_weapon_in_room(room, new_weapon);
             }
@@ -501,6 +507,64 @@ void enter_chest_room(Room& room, Player& player) {
 }
 
 
+// What it does: Handles entering a combat room, on first enter, player will fight.
+//              on later reentry, narrative text suggesting, something has moved in since the player left.
+void enter_combat_room(Room& room, Player& player, bool is_hard) {
+    scene_break();
+
+    if (!room.revealed) {
+        // combat at the first time
+        Enemy* enemy = generateEnemy(player.kill_count, is_hard);
+        combatRoom(player, enemy, is_hard);
+        delete enemy;
+        room.revealed = true;
+        press_enter_to_continue();
+        return;
+    }
+
+    // revisit, narrative about the corpse
+    string corpse_texts[] = {
+        "The corpse twitches. It shouldn't. You ended it. It twitches again",
+        "The remains of the creature have begun to decay. The smell is unbearable",
+        "Nothing remains but a fresh bloody liver on the stone floor",
+        "The eyes of the dead thing are open. They weren't when you left",
+        "The body is still here. You step around it carefully"
+    };
+    writer_print(corpse_texts[rand() % 5]);
+
+    this_thread::sleep_for(chrono::milliseconds(1000));
+
+    // small chance something useful was left behind, this will be a good random event
+    int scavenge_roll = rand() % 100;
+    if (scavenge_roll < 5) {
+        writer_print("You search the remains");
+        this_thread::sleep_for(chrono::milliseconds(400));
+
+        int find_roll = rand() % 100;
+        if (find_roll < 50) {
+            Healing* found = new bandage();
+            writer_print("You find a partially used Bandage");
+            bool success = player.pickupHealings(found);
+            if (!success) {
+                drop_healing_in_room(room, found);
+            }
+        }
+        else {
+            player.playerAttack += 1;
+            writer_print("Studying the wounds teaches you something");
+            writer_print("Attack increased by 1! (" + to_string(player.playerAttack) + ")");
+        }
+    }
+
+    // check for dropped items as usual
+    if (!room.has_warning) {
+        if (!room.dropped_weapons.empty() || !room.dropped_healings.empty()) {
+            check_room_for_items(room, player);
+        }
+    }
+    press_enter_to_continue();
+}
+
 // What it does: generate escape room when a player obtained 3 keys.
 //              the square that the player currently on, the starting square, the adjacent squares cannot be the escape room
 //              output modifies the grid
@@ -539,7 +603,6 @@ void reveal_escape_room(vector<vector<Room>>& grid, int size, int player_x, int 
     writer_print("A distant grinding of stone echoes through the halls");
     writer_print("Somewhere... a new passage has opened. The map marked something new");
     writer_print("Find it. Escape while you still can");
-    press_enter_to_continue();
 }
 
 
@@ -620,7 +683,7 @@ void check_room_for_items(Room& room, Player& player) {
 
             // show current weapon inventory first
             writer_print("Your weapon inventory:");
-            player.showWeapons();
+            player.showWeapons(true);
             cout << "  Capacity: " << player.weaponsInv.size() << "/" << player.weaponCap + 1 << " (including Fist)" << endl;
 
             cout << "\n  Which weapon to pick up? (1-" << room.dropped_weapons.size() << ", or 0 to cancel): " << flush;
@@ -650,7 +713,7 @@ void check_room_for_items(Room& room, Player& player) {
                 cin >> discard_choice;
 
                 if (discard_choice == "y" || discard_choice == "Y") {
-                    player.showWeapons();
+                    player.showWeapons(false);
                     cout << "  Choose weapon to discard (1-" << player.weaponsInv.size() << ", or 0 to cancel): " << flush;
                     int discard_index;
                     cin >> discard_index;
