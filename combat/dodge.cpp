@@ -1,4 +1,5 @@
 #include "dodge.h" 
+#include "../output_text/output_text.h"
 #include <iostream>
 #include <chrono>
 #include <thread>
@@ -150,14 +151,14 @@ bool Dodge() {
     // Check if dodge was successful
     if (pressPosition != -1) {
         if (pressPosition >= BRACKET_START && pressPosition <= BRACKET_END) {
-            std::cout << "\n [SUCCESS!] You dodged the attack!\n";
+            writer_print("\n [SUCCESS!] You dodged the attack!"); // allowe slower output to let player has enough time to read the text - @north_ice
             dodged = true;
         } else {
-            std::cout << "\n [FAIL!] You could not dodge the attack!\n";
+            writer_print("\n [FAIL!] You could not dodge the attack!"); // same as above - @north_ice
             dodged = false;
         }
     } else {
-        std::cout << "\n [TIME'S UP!] You forgot to dodge!\n";
+        writer_print("\n [TIME'S UP!] You forgot to dodge!"); // same as above - @north_ice
         dodged = false;
     }
     
@@ -166,6 +167,7 @@ bool Dodge() {
 
 
 // This part are suggested to be removed
+// read by @north_ice at 23:00 28 Apr: agree on the removal
 /*int main() {
     bool result = Dodge();
     std::cout << "\nFinal Result: " << (result ? "DODGED!" : "HIT!") << std::endl;
