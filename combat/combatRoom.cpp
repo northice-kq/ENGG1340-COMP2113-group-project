@@ -27,14 +27,16 @@ void combatRoom(Player &p1, Enemy* currentEnemy, bool isHard) {
             cout << "Type your choice here: ";
             cin >> choice;
             if (choice == "attack"){
-                p1.showWeapons(true);
-                this_thread::sleep_for(chrono::milliseconds(1000));
-                cout << "Which weapon do you want to use? Type the number: ";
-                int weaponchoice;
-                while (!(cin >> weaponchoice) || weaponchoice > p1.weaponsInv.size()) {
-                    cout << "Please enter a valid number." << endl;
-                    cin.clear(); cin.ignore(1000, '\n');
-                    continue;
+                int weaponchoice = 1;
+                if (p1.weaponsInv.size() > 1) {
+                    p1.showWeapons(true);
+                    this_thread::sleep_for(chrono::milliseconds(1000));
+                    cout << "Which weapon do you want to use? Type the number: ";
+                    while (!(cin >> weaponchoice) || weaponchoice > p1.weaponsInv.size()) {
+                        cout << "Please enter a valid number." << endl;
+                        cin.clear(); cin.ignore(1000, '\n');
+                        continue;
+                    }
                 }
                 cout << endl;
                 this_thread::sleep_for(chrono::milliseconds(1000));
