@@ -1,5 +1,6 @@
 #include "combatRoom.h"
 #include "dodge.h"
+#include "../output_text/output_text.h" // allow writer_print();
 #include <iostream>
 #include <cstdlib>
 #include <thread>
@@ -75,9 +76,9 @@ void combatRoom(Player &p1, Enemy* currentEnemy, bool isHard) {
         
         // check if died
         if (currentEnemy->hp <= 0) {
-            cout << "\nVictory! You defeated the enemy." << endl;
+            writerprint(\n"Victory! You defeated the enemy.", false); // allow slower victory text - @north_ice
             this_thread::sleep_for(chrono::milliseconds(1000));
-            cout << "Leveled up! You are getting stronger." << endl;
+            writer_print("Leveled up! You are getting stronger.", false); // same as above - @north_ice
             this_thread::sleep_for(chrono::milliseconds(1000));
             
             int HPreward = rand() % 6 + 5;
