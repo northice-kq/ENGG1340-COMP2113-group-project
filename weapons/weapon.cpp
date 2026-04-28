@@ -11,7 +11,7 @@ Weapon::Weapon(std::string name, std::string description, int baseDamage,
 
 std::string Weapon::shortDescription() const {
     std::ostringstream oss;
-    oss << name << "(Durability: ";
+    oss << name << " (Durability: ";
     if (durability == INT_MAX)
         oss << "Infinite)";
     else
