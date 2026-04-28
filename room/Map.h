@@ -9,7 +9,7 @@
 struct Map {
     bool is_hard_difficulty;
     int size;                       // grid size (5)
-    std::vector<std::vector<Room>> grid;  // track visited cells
+    std::vector<std::vector<bool>> explored;  // track visited cells
     Player player;           // current position
 
     // showing escape square - @north_ice
@@ -28,7 +28,6 @@ struct Map {
      * return the square of the escape room - @north_ice */
     void setEscapeRoom(int x, int y);
     Player& getPlayer() { return player; }
-    Room& getRoom(int x, int y) { return grid[y][x]; }
     int getSize() const { return size; }
 };
 
