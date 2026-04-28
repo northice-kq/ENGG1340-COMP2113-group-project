@@ -1,8 +1,7 @@
 #ifndef MAP_H
 #define MAP_H
-// this file should be called the game engine
 #include "room.h"
-#include "player.h"
+#include "../player/player.h"
 #include <vector>
 #include <string>
 

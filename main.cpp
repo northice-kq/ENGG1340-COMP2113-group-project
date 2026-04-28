@@ -1,7 +1,8 @@
 #include "room/Map.h"
+#include "output_text/output_text.h"
 
 #include <string>
-
+#include <thread>
 #include <iostream>
 #include <cstdlib>
 #include <ctime>

@@ -1,10 +1,9 @@
 #include "room.h"
 #include "../output_text/output_text.h"
-#include "combatRoom.h"
-#include "entities.h"
+#include "../combat/combatRoom.h"
+#include "../entities/entities.h"
 #include <iostream>
 #include <thread>
-#include <chrono>
 #include <cstdlib>
 #include <algorithm>  // for using shuffle
 #include <random>

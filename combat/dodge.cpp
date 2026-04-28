@@ -1,9 +1,7 @@
 #include "dodge.h" 
 #include <iostream>
-#include <string>
 #include <chrono>
 #include <thread>
-#include <random>
 #include <termios.h> // for instant key responds
 #include <unistd.h> //unix
 #include <fcntl.h> // file control
@@ -168,8 +166,8 @@ bool Dodge() {
 
 
 // This part are suggested to be removed
-int main() {
+/*int main() {
     bool result = Dodge();
     std::cout << "\nFinal Result: " << (result ? "DODGED!" : "HIT!") << std::endl;
     return 0;
-}
+}*/
