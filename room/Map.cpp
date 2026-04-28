@@ -9,11 +9,12 @@ using namespace std;
 Map::Map(bool is_hard_difficulty) :
     is_hard_difficulty(is_hard_difficulty),
     size(is_hard_difficulty ? 7 : 5),
-    grid(assign_rooms(size)),
     player(Player(is_hard_difficulty)),
     escapeX(-1),
     escapeY(-1),
     escapeRevealed(false) {
+    explored.resize(size, vector<bool>(size, false));
+    explored[0][0] = true;  // start is explored - @north_ice
 }
 
 // Destructor – vector cleans itself, but included for completeness
@@ -44,7 +45,7 @@ void Map::printMap() const {
             else if (escapeRevealed && x == escapeX && y == escapeY) {
                 cout << "[X] ";
             }
-            else if (grid[y][x].revealed) {
+            else if (explored[y][x]) {
                 cout << "[.] ";
             }
             else {
@@ -79,13 +80,14 @@ bool Map::movePlayer(string direction) {
 
     // Check boundaries
     if (newX < 0 || newX >= size || newY < 0 || newY >= size) {
-        cout << "You cannot move there – it's outside the dungeon!\n";
+        cout << "You cannot move there, it's outside the dungeon!\n";
         return false;
     }
 
     // Valid move: update position and mark new cell as explored
     player.playerX = newX;
     player.playerY = newY;
+    explored[newY][newX] = true;
     return true;
 }
 
