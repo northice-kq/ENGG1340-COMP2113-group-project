@@ -1,6 +1,6 @@
 main: main.o combatRoom.o dodge.o entities.o healing.o output_text.o player.o Map.o room.o weapon.o railgun.o
 	g++ $^ -o $@
-main.o: ../main.cpp ../room/Map.h ../output_text/output_text.h ../entities/entities.h ../combat/combatRoom.h
+main.o: ../main.cpp ../combat/combatRoom.h ../combat/dodge.h ../room/Map.h ../output_text/output_text.h ../entities/entities.h ../combat/combatRoom.h
 	g++ -c $< -o $@
 combatRoom.o: ../combat/combatRoom.cpp ../combat/combatRoom.h ../combat/dodge.h ../player/player.h ../healings/healing.h ../weapons/weapon.h ../entities/entities.h
 	g++ -c $< -o $@
@@ -8,19 +8,19 @@ dodge.o: ../combat/dodge.cpp ../combat/dodge.h
 	g++ -c $< -o $@
 entities.o: ../entities/entities.cpp ../entities/entities.h
 	g++ -c $< -o $@
-healing.o: ../healings/healing.cpp ../healings/healing.h
+healing.o: ../healings/healing.cpp ../healings/healing.h ../output_text/output_text.h
 	g++ -c $< -o $@
 output_text.o: ../output_text/output_text.cpp ../output_text/output_text.h
 	g++ -c $< -o $@
-player.o: ../player/player.cpp ../player/player.h ../healings/healing.h ../weapons/weapon.h
+player.o: ../player/player.cpp ../player/player.h ../healings/healing.h ../weapons/weapon.h ../output_text/output_text.h
 	g++ -c $< -o $@
 Map.o: ../room/Map.cpp ../room/Map.h ../room/room.h ../player/player.h ../weapons/weapon.h ../healings/healing.h
 	g++ -c $< -o $@
 room.o: ../room/room.cpp ../room/room.h ../player/player.h ../weapons/weapon.h ../healings/healing.h ../output_text/output_text.h
 	g++ -c $< -o $@
-weapon.o: ../weapons/weapon.cpp ../weapons/weapon.h
+weapon.o: ../weapons/weapon.cpp ../weapons/weapon.h ../output_text/output_text.h
 	g++ -c $< -o $@
-railgun.o: ../weapons/railgun.cpp ../weapons/weapon.h
+railgun.o: ../weapons/railgun.cpp ../weapons/weapon.h ../output_text/output_text.h
 	g++ -c $< -o $@
 clean:
 	rm -f *.o main

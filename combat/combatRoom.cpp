@@ -1,5 +1,5 @@
 #include "combatRoom.h"
-
+#include "dodge.h"
 #include <iostream>
 #include <cstdlib>
 #include <thread>
