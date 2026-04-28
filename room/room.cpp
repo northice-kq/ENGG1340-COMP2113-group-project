@@ -7,6 +7,7 @@
 #include <cstdlib>
 #include <algorithm>  // for using shuffle
 #include <random>
+#include <sstream>
 using namespace std;
 
 Room::Room(Room_Type room_type, int x_co, int y_co) {
@@ -149,6 +150,7 @@ void enter_empty_room(Room& room, Player& player) {
         room.has_warning = true;  // permanently marks this room
         writer_print("You blink");
         writer_print(("'It' didn't"));
+        writer_print(". . .", false, true, 200);
         writer_print("I suggest you to leave this room as fast as possible");
         press_enter_to_continue();
     }
@@ -158,8 +160,21 @@ void enter_empty_room(Room& room, Player& player) {
         if (rest_chance < 20) {
             this_thread::sleep_for(chrono::milliseconds(300));
             writer_print("You take a moment to catch your breath");
-            // Healing will be handled by the player system
-            // This just signals the player found a rest spot
+
+            // Heal 5 HP, but don't exceed max HP - random event
+            if (player.HP < player.maxHP) {
+                int heal_amount = 5;
+                if (player.HP + heal_amount > player.maxHP) {
+                    heal_amount = player.maxHP - player.HP;
+                }
+                player.HP += heal_amount;
+
+                ostringstream oss;
+                oss << "You restore " << heal_amount << " HP. (" << player.HP << "/" << player.maxHP << ")";
+                writer_print(oss.str(), false);
+            } else {
+                writer_print("You're already at full health, but the rest was nice", false);
+            }
         }
         writer_print("This room is empty. Please move on to the next room");
         press_enter_to_continue();
@@ -236,8 +251,8 @@ void enter_key_room(Room& room, int& keys_collected, vector<vector<Room>>& grid,
 
     //          Handles a chest room encounter. On first visit, rolls for a random reward and applies it to the player
     //          Subsequet visit will display a visited room
-//              Loot table: 65% stat boost, 15% weapon, 15% healing, 5% nothing.
-//              Stat boosts: 40% +1 ATK, 20% +2 ATK, 30% +5 HP, 10% +10 HP.
+//              Loot table: 50% stat boost, 22% weapon, 22% healing, 6% nothing.
+//              Stat boosts: 40% +2 ATK, 10% +5 ATK, 30% +5 HP, 20% +10 HP.
 // Inputs:  room         - the chest room
 //          weapons       - player's weapon vector (new weapons pushed)
 //          healings      - player's healing vector (count incremented)
@@ -274,8 +289,8 @@ void enter_chest_room(Room& room, Player& player) {
     // roll for loot category
     int category_roll = rand() % 100; // 0-99
 
-    // 5% nothing
-    if (category_roll < 5) {
+    // 6% nothing
+    if (category_roll < 6) {
         string empty_texts[] = {
             "Just dust and disappointment",
             "Nothing but cobwebs inside. Someone beat you here",
@@ -288,9 +303,8 @@ void enter_chest_room(Room& room, Player& player) {
         return;
     }
 
-    // 15% healing
-    // 15% healing
-    if (category_roll < 20) {
+    // 22% healing
+    if (category_roll < 28) {
         int healing_roll = rand() % 100;
 
         Healing* new_healing = nullptr;
@@ -322,8 +336,8 @@ void enter_chest_room(Room& room, Player& player) {
         return;
     }
 
-    // 15% for weapon
-    if (category_roll < 35) {
+    // 22% for weapon
+    if (category_roll < 50) {
         // Roll weapon type
         int weapon_roll = rand() % 100; // 0-99
 
@@ -362,8 +376,8 @@ void enter_chest_room(Room& room, Player& player) {
                 writer_print("Its power resonates with your existing weapon!");
 
                 if (chosen == "Calculator gun") {
-                    player.playerAttack += 2;
-                    writer_print("The numbers align perfectly. Attack +2! (" +
+                    player.playerAttack += 5;
+                    writer_print("The numbers align perfectly. Attack +5! (" +
                                  to_string(player.playerAttack) + ")");
                 }
                 else if (chosen == "Railgun") {
@@ -396,8 +410,8 @@ void enter_chest_room(Room& room, Player& player) {
                     writer_print("The " + chosen + " is in perfect condition!");
 
                     if (chosen == "Sword") {
-                        player.playerAttack += 1;
-                        writer_print("Its sharp edge inspires you. Attack +1! (" +
+                        player.playerAttack += 2;
+                        writer_print("Its sharp edge inspires you. Attack 21! (" +
                                      to_string(player.playerAttack) + ")");
                     }
                     else if (chosen == "Axe") {
@@ -451,34 +465,34 @@ void enter_chest_room(Room& room, Player& player) {
         return;
     }
 
-    // for the rest 65% or reroll form full weapon obtained
+    // for the rest 50%
     int stat_roll = rand() % 100; // 0-99
     if (stat_roll < 40) {
-        // +1 attack (40%)
-        player.playerAttack += 1;
+        // +2 attack (40%)
+        player.playerAttack += 2;
         string texts[] = {
             "You find an old training manual. Your technique improves slightly!",
             "A worn whetstone lets you sharpen your fighting edge",
             "A fighting comic. Better than nothing, I guess"
         };
         writer_print(texts[rand() % 3]);
-        writer_print("Attack increased by 1! (" + to_string(player.playerAttack) + ")");
+        writer_print("Attack increased by 2! (" + to_string(player.playerAttack) + ")");
     }
-    else if (stat_roll < 60) {
-        // +2 Attack (20%)
-        player.playerAttack += 2;
+    else if (stat_roll < 50) {
+        // +5 Attack (10%)
+        player.playerAttack += 5;
         string texts[] = {
             "You discover a master's fighting scroll. Power surges through you",
             "A sticky note that says 'hit harder, dummy.' It worked",
             "You felt a power surge from all the fallen adventurers in this dungeon"
         };
         writer_print(texts[rand() % 3]);
-        writer_print("Attack increased by 2! (" + to_string(player.playerAttack) + ")");
+        writer_print("Attack increased by 5! (" + to_string(player.playerAttack) + ")");
     }
-    else if (stat_roll < 90) {
+    else if (stat_roll < 80) {
         // +5 Max HP (30%)
         player.maxHP += 5;
-         player.HP += 5;
+        player.HP += 5;
         string texts[] = {
             "You drink from a shimmering fountain. You feel sturdier",
             "A warm glow envelops you. Your body feels reinforced",
@@ -490,7 +504,7 @@ void enter_chest_room(Room& room, Player& player) {
     else {
         // +10 Max HP (10%)
         player.maxHP += 10;
-         player.HP += 10;
+        player.HP += 10;
         string texts[] = {
             "You find a blessed elixir. Vitality courses through your veins",
             "A divine warmth fills the room. Your body is remade stronger",
@@ -809,4 +823,3 @@ void check_room_for_items(Room& room, Player& player) {
         }
     }
 }
-
