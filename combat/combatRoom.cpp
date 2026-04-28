@@ -76,7 +76,7 @@ void combatRoom(Player &p1, Enemy* currentEnemy, bool isHard) {
         
         // check if died
         if (currentEnemy->hp <= 0) {
-            writerprint(\n"Victory! You defeated the enemy.", false); // allow slower victory text - @north_ice
+            writerprint("\nVictory! You defeated the enemy.", false); // allow slower victory text - @north_ice
             this_thread::sleep_for(chrono::milliseconds(1000));
             writer_print("Leveled up! You are getting stronger.", false); // same as above - @north_ice
             this_thread::sleep_for(chrono::milliseconds(1000));
