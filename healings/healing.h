@@ -7,7 +7,6 @@ struct Healing {
     std::string name;
     std::string description;
     Healing(std::string name, std::string description);
-    void printDescription() const;
     bool healPlayer(int& HP, int maxHP);
     virtual int getFinalHP(int HP, int maxHP) const = 0;
 };

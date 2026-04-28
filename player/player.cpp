@@ -96,13 +96,14 @@ void Player::showWeapons(bool showFist) {
         for (int i = 1; i < weaponsInv.size(); i++)
             oss << i << ". " << weaponsInv[i]->shortDescription() << '\n';
     }
-    writer_print(oss.str(), false, false);
+    writer_print(oss.str(), false, false, 5);
 }
 void Player::showHealings() {
     std::ostringstream oss;
     for (int i = 0; i < healingsInv.size(); i++)
-        oss << i + 1 << ". " << healingsInv[i]->name << '\n';
-    writer_print(oss.str(), false, false);
+        oss << i + 1 << ". " << healingsInv[i]->name << ": "
+            << healingsInv[i]->description << '\n';
+    writer_print(oss.str(), false, false, 5);
 }
 void Player::showStats() {
     std::ostringstream oss;
@@ -111,14 +112,4 @@ void Player::showStats() {
     oss << "Collected keys: " << key_count << "/3\n";
     oss << "Kill count    : " << kill_count << '\n';
     writer_print(oss.str(), false, false, 5);
-}
-void Player::showWeaponDescription(int index) {
-    if (index >= 0 && index < weaponsInv.size()) {
-        writer_print(weaponsInv[index]->longDescription(), false, false);
-    }
-}
-void Player::showHealingDescription(int index) {
-    if (index >= 0 && index < healingsInv.size()) {
-        healingsInv[index]->printDescription();
-    }
 }

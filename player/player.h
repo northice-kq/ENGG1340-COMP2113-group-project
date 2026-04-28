@@ -27,8 +27,6 @@ struct Player {
     void showWeapons(bool showFist);
     void showHealings();
     void showStats();
-    void showWeaponDescription(int index);
-    void showHealingDescription(int index);
 };
 
 #endif

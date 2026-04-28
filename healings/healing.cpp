@@ -5,10 +5,6 @@
 Healing::Healing(std::string name, std::string description)
     : name(name), description(description) {}
 
-void Healing::printDescription() const {
-    writer_print(name + ": " + description, false);
-}
-
 bool Healing::healPlayer(int& HP, int maxHP) {
     int finalHP = getFinalHP(HP, maxHP);
     if (finalHP == -1) {
