@@ -555,6 +555,9 @@ void enter_combat_room(Room& room, Player& player, bool is_hard) {
         combatRoom(player, enemy, is_hard);
         delete enemy;
         room.revealed = true;
+
+        // Clear any leftover input from combat to prevent bug
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
         press_enter_to_continue();
         return;
     }
@@ -599,6 +602,7 @@ void enter_combat_room(Room& room, Player& player, bool is_hard) {
             check_room_for_items(room, player);
         }
     }
+    cin.ignore(numeric_limits<streamsize>::max(), '\n');
     press_enter_to_continue();
 }
 
