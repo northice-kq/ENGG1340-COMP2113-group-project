@@ -44,18 +44,3 @@ void writer_print(const string& text, bool is_dots, bool is_new_line, int char_d
     }
 }
 
-void press_enter_to_continue() {
-    cin.ignore(numeric_limits<streamsize>::max(), '\n');
-    cout << "[Press Enter to continue...]" << flush;
-    cin.get();
-}
-
-void scene_break() {
-    // Use writer_print with faster character speed for the divider
-    // no dots
-    writer_print("*************************",false, true, 10, 200);
-
-    // Extra pause after the divider fades in
-    this_thread::sleep_for(chrono::milliseconds(200));
-}
-
