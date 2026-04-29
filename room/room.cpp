@@ -251,7 +251,7 @@ void enter_key_room(Room& room, int& keys_collected, vector<vector<Room>>& grid,
 
     //          Handles a chest room encounter. On first visit, rolls for a random reward and applies it to the player
     //          Subsequet visit will display a visited room
-//              Loot table: 50% stat boost, 22% weapon, 22% healing, 6% nothing.
+//              Loot table: 31% stat boost, 31% weapon, 31% healing, 7% nothing.
 //              Stat boosts: 40% +2 ATK, 10% +5 ATK, 30% +5 HP, 20% +10 HP.
 // Inputs:  room         - the chest room
 //          weapons       - player's weapon vector (new weapons pushed)
@@ -289,8 +289,8 @@ void enter_chest_room(Room& room, Player& player) {
     // roll for loot category
     int category_roll = rand() % 100; // 0-99
 
-    // 6% nothing
-    if (category_roll < 6) {
+    // 7% nothing
+    if (category_roll < 7) {
         string empty_texts[] = {
             "Just dust and disappointment",
             "Nothing but cobwebs inside. Someone beat you here",
@@ -303,8 +303,8 @@ void enter_chest_room(Room& room, Player& player) {
         return;
     }
 
-    // 22% healing
-    if (category_roll < 28) {
+    // 31% healing
+    if (category_roll < 38) {
         int healing_roll = rand() % 100;
 
         Healing* new_healing = nullptr;
@@ -336,8 +336,8 @@ void enter_chest_room(Room& room, Player& player) {
         return;
     }
 
-    // 22% for weapon
-    if (category_roll < 50) {
+    // 31% for weapon
+    if (category_roll < 69) {
         // Roll weapon type
         int weapon_roll = rand() % 100; // 0-99
 
@@ -465,7 +465,7 @@ void enter_chest_room(Room& room, Player& player) {
         return;
     }
 
-    // for the rest 50%
+    // for the rest 31%
     int stat_roll = rand() % 100; // 0-99
     if (stat_roll < 40) {
         // +2 attack (40%)
