@@ -17,19 +17,19 @@ bool Healing::healPlayer(int& HP, int maxHP) {
 }
 
 firstAidKit::firstAidKit()
-    : Healing("First aid kit", "Heals player up to 75HP") {}
+    : Healing("First aid kit", "Heals player up to 75% of max HP") {}
 int firstAidKit::getFinalHP(int HP, int maxHP) const {
-    return (HP >= 75 ? -1 : 75);
+    return (HP >= maxHP * 0.75 ? -1 : maxHP * 0.75);
 }
 
-bandage::bandage() : Healing("Bandage", "Heals player 10HP up to 75HP") {}
+bandage::bandage() : Healing("Bandage", "Heals player 20% of the max HP") {}
 int bandage::getFinalHP(int HP, int maxHP) const {
-    if (HP >= 75)
+    if (HP == maxHP)
         return -1;
-    else if (HP + 10 > 75)
-        return 75;
+    else if (HP + maxHP * 0.2 > maxHP)
+        return maxHP;
     else
-        return HP + 10;
+        return HP + maxHP * 0.2;
 }
 
 medKit::medKit() : Healing("Med kit", "Heals player to full HP") {}

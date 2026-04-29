@@ -346,19 +346,15 @@ void enter_chest_room(Room& room, Player& player) {
 
         if (healing_roll < 40) {
             new_healing = new firstAidKit(); //40%
-            writer_print("You found a First Aid Kit!");
-            writer_print("Heals you up to 75HP");
         }
         else if (healing_roll < 80) {
             new_healing = new bandage(); //40%
-            writer_print("You found a Bandage!");
-            writer_print("Heals 10HP, up to 75HP");
         }
         else {
             new_healing = new medKit(); //20%
-            writer_print("You found a Med Kit!");
-            writer_print("Fully restores your health");
         }
+        writer_print("You found a " + new_healing->name + "!", false);
+        writer_print(new_healing->description, false);
 
         bool success = player.pickupHealings(new_healing);
         if (!success) {
