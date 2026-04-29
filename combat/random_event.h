@@ -11,7 +11,7 @@ struct RandomEvent {
     RandomEvent(std::string name, std::string desc);
     
     // Returns: true if combat should end, false otherwise
-    bool triggerEvent(Player* player, Enemy* currentEnemy, bool& lootDrop, bool& skipPlayerTurn);
+    bool triggerEvent(Player* player, Enemy* currentEnemy, bool& lootDrop);
 };
 
 // Get a random event (equal chance for all 5 events)
