@@ -132,6 +132,39 @@ void enter_empty_room(Room& room, Player& player) {
         writer_print("...with blood in its eyes", false);
         writer_print("...smiling", false);
         this_thread::sleep_for(chrono::milliseconds(1000));
+
+        // The reflection attacks player
+        int damage = 5 + rand() % 6;  // 5 to 10 damage
+        
+        // Ensure player is left with at least 1 HP
+        if (player.HP - damage < 1) {
+            damage = player.HP - 1;
+        }
+        
+        player.HP -= damage;
+        
+        ostringstream oss_mirror;
+        if (damage > 0) {
+            oss_mirror << "Your reflection reaches out and touches you. You take " << damage << " damage!";
+            writer_print(oss_mirror.str());
+            oss_mirror.str("");
+            oss_mirror << "HP: " << player.HP << "/" << player.maxHP;
+            writer_print(oss_mirror.str(), false);
+        } 
+        else {
+            writer_print("Your reflection reaches for you but stops just short...");
+            writer_print("It wants you to suffer longer");
+        }
+        
+        this_thread::sleep_for(chrono::milliseconds(1000));
+        writer_print("Just leave");
+        press_enter_to_continue();
+        return;
+    }
+    
+    writer_print("Just leave");
+    press_enter_to_continue();
+    return;
         writer_print("Just leave");
         press_enter_to_continue();
         return;
