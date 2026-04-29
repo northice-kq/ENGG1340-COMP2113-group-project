@@ -1,5 +1,6 @@
 #include "combatRoom.h"
 #include "dodge.h"
+#include "random_event.h"
 #include "../output_text/output_text.h" // allow writer_print();
 #include <iostream>
 #include <cstdlib>
@@ -16,9 +17,49 @@ void combatRoom(Player &p1, Enemy* currentEnemy, bool isHard) {
     cout << "You encountered this enemy..." << endl;
     currentEnemy->printEnemyDescription();
     this_thread::sleep_for(chrono::milliseconds(1500));
+
+    // ===== RANDOM EVENT SETUP =====
+    bool eventWillHappen = shouldTriggerRandomEvent(isHard);
+    int eventRound = -1;
+    bool eventHasTriggered = false;
+    int currentRound = 0;
+    
+    if (eventWillHappen) {
+        eventRound = getEventTriggerRound();  // 4, 5, or 6
+        writer_print("\n[Something feels strange in the air...]", true);
+        this_thread::sleep_for(chrono::milliseconds(1000));
+    }
+    // ===== END OF SETUP =====
     
     //loop body
     while (p1.HP > 0 && currentEnemy->hp > 0){
+
+        currentRound++; 
+
+        // ===== CHECK IF RANDOM EVENT SHOULD TRIGGER THIS ROUND =====
+        if (eventWillHappen && !eventHasTriggered && currentRound == eventRound) {
+            eventHasTriggered = true;
+            
+            RandomEvent randomEvent = getRandomEvent();
+            bool lootDropFromEvent = true;
+            bool endCombat = randomEvent.triggerEvent(&p1, currentEnemy, lootDropFromEvent);
+            
+            // Check if player died from event
+            if (p1.HP <= 0) {
+                cout << "Game Over... You died in the dungeon." << endl;
+                return;
+            }
+            
+            // Check if combat ended (enemy escaped or truce accepted)
+            if (endCombat) {
+                if (p1.HP > 0) {
+                    writer_print("\nThe battle is over.", false);
+                    this_thread::sleep_for(chrono::milliseconds(1000));
+                }
+                return; // Exit combat
+            }
+        }
+        // ===== END OF RANDOM EVENT CHECK =====
         
         //part 1: player combat
         cout << "\n[Your Turn]" << endl;
@@ -128,7 +169,5 @@ void combatRoom(Player &p1, Enemy* currentEnemy, bool isHard) {
         if (p1.HP <= 0) {
             writer_print("Game Over... You died in the dungeon.", false);
         }
-        
-        
     }
 }
