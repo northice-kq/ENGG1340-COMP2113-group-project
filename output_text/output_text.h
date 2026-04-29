@@ -17,9 +17,9 @@ using namespace std;
 //               dialogue, story moments, and atmospheric narration.
 // Inputs:  text (const string&) - the message to display
 //          char_delay - milliseconds delay between each character
-//                                 (default 40ms for normal pace)
+//                                 (default 20ms for normal pace)
 //          dot_delay    - milliseconds delay between each dot
-//                                  (default 200ms for dramatic trailing and enhance readability)
+//                                  (default 100ms for dramatic trailing and enhance readability)
 
 //          NOTE!!!! To use the default settings, omit the last three perimeters
 
