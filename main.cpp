@@ -41,7 +41,7 @@ int main() {
     Map dungeon(is_hard);          // create map
     Player player(is_hard);
     int size = dungeon.getSize();
-    vector<vector<Room>> room_grid = assign_rooms(size); // assigning the rooms
+    vector<vector<Room>> room_grid = assign_rooms(size, is_hard); // assigning the rooms
     this_thread::sleep_for(chrono::milliseconds(1500));
 
     bool game_running = true;
