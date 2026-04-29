@@ -19,9 +19,32 @@ int Railgun::useWeapon() {
     const int linewidth = width * (maxBonus * 2 + 1);
     // delay: 20 to 40 ms
     const int delay = rand() % 21 + 20;
-    std::ostringstream oss;
-    oss << "Press space bar when the power level reaches " << maxBonus << '!';
-    writer_print(oss.str(), false);
+    writer_print("\nCharge the railgun!", false);
+    writer_print("Press space bar when the power level reaches level 5!",
+                 false);
+    std::cout << "[ ";
+    for (int i = 0; i < linewidth; i++) {
+        std::cout << (maxBonus - abs(i / width - maxBonus));
+    }
+    std::cout << " ]" << std::endl;
+    std::cout << "\033[s";
+    for (int i = 0; i < 6; i++) {
+        std::cout << "\033[2A";
+        std::cout << "\033[2K";
+        if (i % 2 == 0)
+            std::cout
+                << "Press space bar when the power level reaches level 5!\n";
+        else
+            std::cout << '\n';
+        std::cout << "\033[1B";
+        std::cout << std::flush;
+        std::this_thread::sleep_for(std::chrono::milliseconds(500));
+    }
+    std::cout << "\033[2A\033[2K";
+    std::cout << "Press space bar when the power level reaches level 5!\n";
+    std::cout << "\033[u" << std::flush;
+    std::cout << "\033[1A";
+
     { // setNonBlocking(true)
         termios ttystate;
         tcgetattr(STDIN_FILENO, &ttystate);
@@ -54,8 +77,10 @@ int Railgun::useWeapon() {
         }
         if (keyPressed) {
             char c = getchar();
-            bonus = (maxBonus - abs(pos / width - maxBonus));
-            break;
+            if (c == ' ') {
+                bonus = (maxBonus - abs(pos / width - maxBonus));
+                break;
+            }
         }
         std::this_thread::sleep_for(std::chrono::milliseconds(delay));
     }
@@ -67,7 +92,7 @@ int Railgun::useWeapon() {
         ttystate.c_lflag |= ECHO;
         tcsetattr(STDIN_FILENO, TCSANOW, &ttystate);
     }
-    oss.str("");
+    std::ostringstream oss;
     oss << "Your railgun has charged to power level " << bonus;
     writer_print(oss.str(), false);
     damage += bonus * 3;
