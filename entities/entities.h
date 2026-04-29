@@ -6,12 +6,6 @@
 
 using namespace std;
 
-struct player{
-    int hp;
-    int attack;
-    int killcnt;
-};
-
 //parent class of enemy
 class Enemy{
 public:
