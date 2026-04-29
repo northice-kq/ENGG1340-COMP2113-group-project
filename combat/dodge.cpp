@@ -63,8 +63,8 @@ bool Dodge() {
     const int FLASH_DELAY_MS = 500;
     
     // Display initial header and line
-    std::cout << "\n=== DODGE THE ATTACK ===\n";
-    std::cout << "Press 'r' when the 'o' is inside the brackets [   ]\n";
+    writer_print("\n=== DODGE THE ATTACK ===", true);
+    writer_print("Press 'r' when the 'o' is inside the brackets [   ]", true);
     
     // Draw the initial line with 'o' at position 0
     for (int pos = 0; pos < LINE_LENGTH; pos++) {
@@ -165,11 +165,3 @@ bool Dodge() {
     return dodged;
 }
 
-
-// This part are suggested to be removed
-// read by @north_ice at 23:00 28 Apr: agree on the removal
-/*int main() {
-    bool result = Dodge();
-    std::cout << "\nFinal Result: " << (result ? "DODGED!" : "HIT!") << std::endl;
-    return 0;
-}*/
