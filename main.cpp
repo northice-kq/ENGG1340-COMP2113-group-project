@@ -24,9 +24,19 @@ int main() {
     cout << "\nChoice: ";
 
     int diff_choice;
-    cin >> diff_choice;
-    bool is_hard = (diff_choice == 2);
+    while (true) {
+        cin >> diff_choice;
+        if (diff_choice == 1 || diff_choice ==2) {
+            break;
+        }
+        writer_print("Invalid command! Please select difficulty");
+        writer_print("Invalid choice! Please enter 1 or 2.", false);
+        cout << "Choice: ";
+        cin.clear();
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+    }          
 
+    bool is_hard = (diff_choice == 2);
 
     Map dungeon(is_hard);          // create map
     Player player(is_hard);
