@@ -66,18 +66,15 @@ bool Player::discardHealings(int index) {
 }
 
 bool Player::useHealing(int index) {
-    if (healingsInv.empty()) {
-        writer_print("No healing items!", false);
-        return false;
-    }
     if (index < 0 || index >= healingsInv.size())
         return false;
     std::vector<Healing*>::iterator it = healingsInv.begin() + index;
     bool success = (*it)->healPlayer(HP, maxHP);
     if (success) {
         std::ostringstream oss;
-        oss << "Player HP is now " << HP;
-        writer_print(oss.str(), false);
+        oss << "Healing success!\n";
+        oss << "Player HP is now " << HP << "/" << maxHP << '\n';
+        writer_print(oss.str(), false, false);
         delete *it;
         healingsInv.erase(it);
         return true;

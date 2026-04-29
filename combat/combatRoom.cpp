@@ -33,7 +33,7 @@ void combatRoom(Player &p1, Enemy* currentEnemy, bool isHard) {
                     p1.showWeapons(true);
                     this_thread::sleep_for(chrono::milliseconds(1000));
                     cout << "Which weapon do you want to use? Type the number: ";
-                    while (!(cin >> weaponchoice) || weaponchoice > p1.weaponsInv.size()) {
+                    while (!(cin >> weaponchoice) || weaponchoice < 1 || weaponchoice > p1.weaponsInv.size()) {
                         cout << "Please enter a valid number." << endl;
                         cin.clear(); cin.ignore(1000, '\n');
                         continue;
@@ -57,13 +57,12 @@ void combatRoom(Player &p1, Enemy* currentEnemy, bool isHard) {
                 p1.showHealings();
                 int healingchoice;
                 cout << "Which healing tool do you want to use? Type the number: ";
-                while (!(cin >> healingchoice) || healingchoice > p1.healingsInv.size()) {
+                while (!(cin >> healingchoice) || healingchoice < 1 || healingchoice > p1.healingsInv.size()) {
                     cout << "Please enter a valid number." << endl;
                     cin.clear(); cin.ignore(1000, '\n');
                     continue;
                 }
                 p1.useHealing(healingchoice-1);
-                cout << "Now you have" << p1.HP << "/" << p1.maxHP << " HP." << endl;
             }
             else if (choice == "show"){
                 p1.showWeapons(true);
@@ -127,7 +126,7 @@ void combatRoom(Player &p1, Enemy* currentEnemy, bool isHard) {
         
         // check if player died
         if (p1.HP <= 0) {
-            cout << "Game Over... You died in the dungeon." << endl;
+            writer_print("Game Over... You died in the dungeon.", false);
         }
         
         
