@@ -17,7 +17,7 @@ struct RandomEvent {
 // Get a random event (equal chance for all 5 events)
 RandomEvent getRandomEvent();
 
-// Check if random event occurs (5% normal, 75% hard, once per COMBAT)
+// Check if random event occurs (0% normal, 75% hard, once per COMBAT)
 bool shouldTriggerRandomEvent(bool isHard);
 
 // Get the round number when the event should trigger (4-6th round)
