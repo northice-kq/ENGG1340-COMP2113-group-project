@@ -163,14 +163,6 @@ void enter_empty_room(Room& room, Player& player) {
         return;
     }
     
-    writer_print("Just leave");
-    press_enter_to_continue();
-    return;
-        writer_print("Just leave");
-        press_enter_to_continue();
-        return;
-    }
-
     if (!room.dropped_weapons.empty() || !room.dropped_healings.empty()) {
         check_room_for_items(room, player);
     }
