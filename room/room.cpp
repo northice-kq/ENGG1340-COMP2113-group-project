@@ -26,17 +26,29 @@ Room::Room(Room_Type room_type, int x_co, int y_co) {
     }
 }
 
-vector<vector<Room>> assign_rooms(int size) {
+vector<vector<Room>> assign_rooms(int size, bool is_hard) {
     int total = size * size;
-
+    
+    // set room counts based on difficulty
+    int key_count = 3;  // always 3 keys
+    int chest_count, enemy_count;
+    
+    if (is_hard) {
+        chest_count = 15;
+        enemy_count = 22;
+    } 
+    else {
+        chest_count = 6;
+        enemy_count = 10;
+    }
     // Building the pool and counts per type
     vector<Room_Type> pool;
     pool.reserve(total); // allocate memory upfront so as to avoid reallocaitons
     pool.push_back(START);  // only 1 square is start (0,0)
-    pool.insert(pool.end(), 3, KEY);
-    pool.insert(pool.end(), 6, CHEST);
-    pool.insert(pool.end(), 10, ENEMY);
-    pool.insert(pool.end(), total - 1 - 3 - 6 - 10, NOTHING);
+    pool.insert(pool.end(), key_count, KEY);
+    pool.insert(pool.end(), chest_count, CHEST);
+    pool.insert(pool.end(), enemy_count, ENEMY);
+    pool.insert(pool.end(), total - 1 - key_count - chest_count - enemy_count, NOTHING);
 
     // pool.begin() + 1 — skip index 0 (START) so it stays at position 0, not shuffling
     shuffle(pool.begin() + 1, pool.end(), default_random_engine{random_device{}()}); //gives true randomness
@@ -251,7 +263,7 @@ void enter_key_room(Room& room, int& keys_collected, vector<vector<Room>>& grid,
 
     //          Handles a chest room encounter. On first visit, rolls for a random reward and applies it to the player
     //          Subsequet visit will display a visited room
-//              Loot table: 31% stat boost, 31% weapon, 31% healing, 7% nothing.
+//              Loot table: 13% stat boost, 40% weapon, 40% healing, 7% nothing.
 //              Stat boosts: 40% +2 ATK, 10% +5 ATK, 30% +5 HP, 20% +10 HP.
 // Inputs:  room         - the chest room
 //          weapons       - player's weapon vector (new weapons pushed)
@@ -303,8 +315,8 @@ void enter_chest_room(Room& room, Player& player) {
         return;
     }
 
-    // 31% healing
-    if (category_roll < 38) {
+    // 40% healing
+    if (category_roll < 47) {
         int healing_roll = rand() % 100;
 
         Healing* new_healing = nullptr;
@@ -336,23 +348,23 @@ void enter_chest_room(Room& room, Player& player) {
         return;
     }
 
-    // 31% for weapon
-    if (category_roll < 69) {
+    // 40% for weapon
+    if (category_roll < 87) {
         // Roll weapon type
         int weapon_roll = rand() % 100; // 0-99
 
         string chosen;
-        if (weapon_roll < 40) {
-            chosen = "Sword";           //40%
+        if (weapon_roll < 10) {
+            chosen = "Sword";           //10%
         }
-        else if (weapon_roll < 70) {
-            chosen = "Axe";             //30%
+        else if (weapon_roll < 30) {
+            chosen = "Axe";             //20%
         }
-        else if (weapon_roll < 85) {
-            chosen = "Calculator gun";  //15%
+        else if (weapon_roll < 65) {
+            chosen = "Calculator gun";  //35%
         }
         else {
-            chosen = "Railgun";         //15%
+            chosen = "Railgun";         //35%
         }
 
         // check if player already owns this weapon type
@@ -465,7 +477,7 @@ void enter_chest_room(Room& room, Player& player) {
         return;
     }
 
-    // for the rest 31%
+    // for the rest 13%
     int stat_roll = rand() % 100; // 0-99
     if (stat_roll < 40) {
         // +2 attack (40%)
@@ -482,11 +494,10 @@ void enter_chest_room(Room& room, Player& player) {
         // +5 Attack (10%)
         player.playerAttack += 5;
         string texts[] = {
-            "You discover a master's fighting scroll. Power surges through you",
             "A sticky note that says 'hit harder, dummy.' It worked",
             "You felt a power surge from all the fallen adventurers in this dungeon"
         };
-        writer_print(texts[rand() % 3]);
+        writer_print(texts[rand() % 2]);
         writer_print("Attack increased by 5! (" + to_string(player.playerAttack) + ")");
     }
     else if (stat_roll < 80) {
@@ -495,22 +506,16 @@ void enter_chest_room(Room& room, Player& player) {
         player.HP += 5;
         string texts[] = {
             "You drink from a shimmering fountain. You feel sturdier",
-            "A warm glow envelops you. Your body feels reinforced",
             "Most humans are soft and weak, but you've got admirable heft!"
         };
-        writer_print(texts[rand() % 3]);
+        writer_print(texts[rand() % 2]);
         writer_print("Max HP increased by 5! (" + to_string(player.maxHP) + ")");
     }
     else {
         // +10 Max HP (10%)
         player.maxHP += 10;
-        player.HP += 10;
-        string texts[] = {
-            "You find a blessed elixir. Vitality courses through your veins",
-            "A divine warmth fills the room. Your body is remade stronger",
-            "A molden cheese sandwich! Delicious, nutritious, and absolutely not going to give you food poisoning"
-        };
-        writer_print(texts[rand() % 3]);
+        player.HP += 10;            
+        writer_print("A molden cheese sandwich! Delicious, nutritious, and absolutely not going to give you food poisoning");
         writer_print("Max HP increased by 10! (" + to_string(player.maxHP) + ")");
         writer_print("Now you can die, but... slower");
     }
