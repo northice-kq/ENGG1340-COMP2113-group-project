@@ -86,45 +86,7 @@ else if (eventName == "[Lucky find]") {
         skipPlayerTurn = true;
         return false;
     }
-    else if (eventName == "[Truce?]") {
-        writer_print("The enemy lowers their weapon and offers a deal...", true);
-        writer_print("[1] Accept (Get healing potion + half XP)", false);
-        writer_print("[2] Reject (Enemy becomes enraged)", false);
-        cout << "Enter your choice (1 or 2): ";
-        
-        int choice;
-        cin >> choice;
-        
-        if (choice == 1) {
-            writer_print("You accept the truce.", true);
-            
-            if (player->healingsInv.size() < player->healingCap) {
-                Healing* potion = new medKit();  // Med kit heals to full
-                player->pickupHealings(potion);
-                writer_print("You received a Med Kit!", true);
-            } else {
-                writer_print("Your inventory is full, but you survived!", true);
-            }
-            
-            player->kill_count++; // player gets XP (*** half XP is NOT possible due to int type for kill_count)
-            writer_print("You gained experience from the encounter.", true);
-            
-            lootDrop = false;
-            skipPlayerTurn = false;
-            return true; // combat ends
-        } else {
-            writer_print("You reject the deal! The enemy fights with increased rage!", true);
-            currentEnemy->attack = currentEnemy->attack * 1.1;
-            
-            oss.str("");
-            oss << "Enemy attack increased to " << currentEnemy->attack << "!";
-            writer_print(oss.str(), true);
-            
-            lootDrop = true;
-            skipPlayerTurn = false;
-            return false;
-        }
-    } 
+ 
         else if (eventName == "[Truce?]") {
         writer_print("The enemy lowers their weapon and offers a deal...", true);
         writer_print("[1] Accept (Get healing potion + half XP)", false);
