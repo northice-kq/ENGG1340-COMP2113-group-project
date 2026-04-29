@@ -215,8 +215,8 @@ bool shouldTriggerRandomEvent(bool isHard) {
         // 75% chance to trigger ONCE per combat on HARD mode
         return (rand() % 100) < 75;
     } else {
-        // 5% chance to trigger ONCE per combat on NORMAL mode
-        return (rand() % 100) < 5;
+        // 0% chance to trigger ONCE per combat on NORMAL mode
+        return (0);
     }
 }
 
