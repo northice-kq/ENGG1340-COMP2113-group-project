@@ -53,10 +53,10 @@ struct Room {
 };
 
 // what it does: Randomly assigns a Room_Type to every cell in the grid.
-//              START at (0,0), then 3 KEY, 6 CHEST, 10 ENEMY, 5 NOTHING
+//              START at (0,0), then 3 KEY, 6/15 CHEST, 10/22 ENEMY, 5/8 NOTHING in easy/hard
 //              using shuffle for (x,y)
 //              rreturns a 2D vector of Room struct
-vector<vector<Room>> assign_rooms(int size);
+vector<vector<Room>> assign_rooms(int size, bool is_hard);
 
 
 // What it does: Handles the player entering every different types of rooms
