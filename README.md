@@ -2,7 +2,7 @@
 # Dungeon Crawler Game (C++)
 
 ## 1. Team Members
-(TBC)
+Lam Ka Ho UID:3036216863
 
 
 
@@ -22,7 +22,7 @@ The dungeon is a square grid (5×5 in Easy mode, 7×7 in Hard mode).
 Each grid cell is a Room object stored in a vector<vector<Room>>.
 Every room has a type, including: START, ENEMY, CHEST, KEY, EMPTY, and ESCAPE.
 Room types are randomly assigned at the beginning of the game using a shuffle-based algorithm.
-The player starts at position (0, 0), and movement is controlled using WASD commands.
+The player starts at position (0, 0), and movement is controlled using "up/down/left/right" commands.
 The map updates dynamically after each movement, revealing visited rooms.
 
 Supported Coding Requirements:
