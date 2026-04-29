@@ -63,8 +63,8 @@ bool Dodge() {
     const int FLASH_DELAY_MS = 500;
     
     // Display initial header and line
-    writer_print("\n=== DODGE THE ATTACK ===", true);
-    writer_print("Press 'r' when the 'o' is inside the brackets [   ]", true);
+    writer_print("\n=== DODGE THE ATTACK ===", false); // false mean no dots - @north_ice
+    writer_print("Press 'r' when the 'o' is inside the brackets [   ]", false); // false mean no dots - @north_ice
     
     // Draw the initial line with 'o' at position 0
     for (int pos = 0; pos < LINE_LENGTH; pos++) {
@@ -151,7 +151,7 @@ bool Dodge() {
     // Check if dodge was successful
     if (pressPosition != -1) {
         if (pressPosition >= BRACKET_START && pressPosition <= BRACKET_END) {
-            writer_print("\n [SUCCESS!] You dodged the attack!"); // allowe slower output to let player has enough time to read the text - @north_ice
+            writer_print("\n [SUCCESS!] You dodged the attack!"); // allow slower output to let player has enough time to read the text - @north_ice
             dodged = true;
         } else {
             writer_print("\n [FAIL!] You could not dodge the attack!"); // same as above - @north_ice
