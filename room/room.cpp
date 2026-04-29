@@ -126,6 +126,7 @@ void enter_empty_room(Room& room, Player& player) {
     room.revealed = true;
     scene_break();
 
+    //if player revisit mirror room
     if (room.has_warning == true) {
         writer_print("You came back. You are not afraid to die, are you?");
         writer_print("The mirror still shows your reflection");
@@ -175,23 +176,20 @@ void enter_empty_room(Room& room, Player& player) {
     }
     // sentences with atmospheric flavour
     string flavor_texts[] = {
-        "Dust swirls in the stale air as you walk into this room",
         "Cobwebs brush against your face. Eww",
-        "Water drips somewhere in the darkness",
         "Your footsteps echo through the empty chamber",
         "The room is bare, cold stone on all sides",
         "It is just you alone in the hall... or not?",
-        "Nothing but silence and shadows here",
         "Faded desperate scratches mark the walls, long abandoned",
-        "Four cold lifeless mannequins stand in each corner. No sign of life here",
+        "Four cold, lifeless mannequins stand in each corner. No sign of life here",
         "The mirror in this room shows your reflection"
     };
 
     // Pick a random flavor text
-    int index = rand() % 10;
+    int index = rand() % 7;
     writer_print(flavor_texts[index]);
 
-    if (index == 9) {
+    if (index == 6) {
         room.has_warning = true;  // permanently marks this room
         writer_print("You blink");
         writer_print(("'It' didn't"));
