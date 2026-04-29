@@ -2,7 +2,8 @@
 # Dungeon Crawler Game (C++)
 
 ## 1. Team Members
-Lam Ka Ho UID:3036216863
+Lam Ka Ho UID: 3036216863
+Wong Chun Ming UID: 3036586969
 
 
 
