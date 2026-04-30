@@ -8,6 +8,7 @@
 * Ng Ho Him (UID: 3036392851)
 * Wong Chun Ming (UID: 3036586969)
 * Wong Shing Chun (UID: 3036392203)
+* Li Xin Yue (UID: 3036589923)
 
 ## 2. Application Description
 
