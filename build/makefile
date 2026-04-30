@@ -1,4 +1,4 @@
-main: main.o combatRoom.o dodge.o random_event.o entities.o healing.o output_text.o player.o Map.o room.o weapon.o railgun.o
+main: main.o combatRoom.o dodge.o random_event.o entities.o healing.o output_text.o player.o Map.o room.o weapon.o railgun.o save.o
 	g++ $^ -o $@
 main.o: ../main.cpp ../room/Map.h ../room/room.h ../player/player.h ../healings/healing.h ../weapons/weapon.h ../output_text/output_text.h
 	g++ -c $< -o $@
@@ -23,6 +23,8 @@ room.o: ../room/room.cpp ../room/room.h ../player/player.h ../weapons/weapon.h .
 weapon.o: ../weapons/weapon.cpp ../weapons/weapon.h ../output_text/output_text.h
 	g++ -c $< -o $@
 railgun.o: ../weapons/railgun.cpp ../weapons/weapon.h ../output_text/output_text.h
+	g++ -c $< -o $@
+save.o: ../save/save.cpp ../save/save.h ../room/Map.h ../player/player.h ../room/room.h ../weapons/weapon.h ../healings/healing.h
 	g++ -c $< -o $@
 clean:
 	rm -f *.o main
