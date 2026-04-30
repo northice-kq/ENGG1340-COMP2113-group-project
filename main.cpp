@@ -34,7 +34,7 @@ int main() {
             // Create temporary map with the saved difficulty, then restore full state
             dungeon = new Map(saveData.is_hard);
             player_ptr = &(dungeon->getPlayer());
-            room_grid = assign_rooms(dungeon->getSize());  // temporary, will be overwritten
+            room_grid = assign_rooms(dungeon->getSize(), is_hard);  // temporary, will be overwritten
             restoreGame(saveData, *dungeon, *player_ptr, room_grid);
             is_hard = saveData.is_hard;
             loaded = true;
@@ -74,7 +74,7 @@ int main() {
         dungeon = new Map(is_hard);          // create map
         player_ptr = &(dungeon->getPlayer());
         int size = dungeon->getSize();
-        room_grid = assign_rooms(size); // assigning the rooms
+        room_grid = assign_rooms(size, is_hard); // assigning the rooms
         this_thread::sleep_for(chrono::milliseconds(1500));
 
         // game intro, play BEFORE map is shown
