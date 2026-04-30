@@ -1,6 +1,6 @@
 main: main.o combatRoom.o dodge.o random_event.o entities.o healing.o output_text.o player.o Map.o room.o weapon.o railgun.o save.o
 	g++ $^ -o $@
-main.o: ../main.cpp ../room/Map.h ../room/room.h ../player/player.h ../healings/healing.h ../weapons/weapon.h ../output_text/output_text.h
+main.o: ../main.cpp ../room/Map.h ../room/room.h ../player/player.h ../healings/healing.h ../weapons/weapon.h ../output_text/output_text.h ../save/save.h
 	g++ -c $< -o $@
 combatRoom.o: ../combat/combatRoom.cpp ../combat/combatRoom.h ../player/player.h ../healings/healing.h ../weapons/weapon.h ../entities/entities.h ../combat/dodge.h ../combat/random_event.h ../output_text/output_text.h
 	g++ -c $< -o $@
