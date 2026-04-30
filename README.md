@@ -24,7 +24,7 @@
 The game is built around a grid-based dungeon system where the entire map is represented as a 2D grid of rooms.
 
 * The dungeon is a square grid (5×5 in Easy mode, 7×7 in Hard mode).
-* Each grid cell is a Room object stored in a 2D dynamic array,    `vector<vector<Room>>`.
+* Each grid cell is a `Room` object stored in a 2D dynamic array,    `vector<vector<Room>>`.
 * Every room has a type, including: `START`, `ENEMY`, `CHEST`, `KEY`, `EMPTY`, and `ESCAPE`.
 * Room types are randomly assigned at the beginning of the game using a shuffle-based algorithm.
 * The player starts at position (0, 0), and movement is controlled using "up/down/left/right" commands.
@@ -122,7 +122,7 @@ Supported Coding Requirements:
 * (1) Random events: Difficulty affects randomness of combat and rewards.
 * (2) Data structures: Player and enemy stats adjust based on difficulty setting.
 * (5) Multiple files: Difficulty logic is integrated into map initialization.
-* (6) Multiple difficult levels
+* (6) Multiple difficulty levels
 
 ## 4. Non-standard C/C++ Libraries
 
@@ -147,6 +147,6 @@ These standard libraries support core game features such as random dungeon gener
 Simply execute the `game.sh` bash script to compile and run the game.
 
 Notes:
-* g++ must be installed to compile the game.
+* g++ and make must be installed to compile the game.
 * The program is designed to run on the Linux operating system.
 * If compilation fails, ensure all .cpp and .h files are included in the correct directory.
