@@ -10,14 +10,4 @@ else
     rm error.txt
 fi
 cd build
-if [ -e gamedata.txt ]; then
-    echo "Do you want to load the saved game data? (y/n)"
-    read choice
-    if [ $choice == "y" ] || [ $choice == "Y" ]; then
-        ./main gamedata.txt
-    else
-        ./main
-    fi
-else
-    ./main
-fi
+./main
