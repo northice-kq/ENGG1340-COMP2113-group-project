@@ -5,6 +5,7 @@
 ## 1. Team Members
 
 * Lam Ka Ho (UID: 3036216863)
+* Ng Ho Him (UID: 3036392851)
 * Wong Chun Ming (UID: 3036586969)
 * Wong Shing Chun (UID: 3036392203)
 
