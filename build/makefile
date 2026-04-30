@@ -7,7 +7,7 @@ combatRoom.o: ../combat/combatRoom.cpp ../combat/combatRoom.h ../player/player.h
 dodge.o: ../combat/dodge.cpp ../combat/dodge.h ../output_text/output_text.h
 	g++ -c $< -o $@
 random_event.o: ../combat/random_event.cpp ../combat/random_event.h ../player/player.h ../healings/healing.h ../weapons/weapon.h ../entities/entities.h ../output_text/output_text.h
-  g++ -c $< -o $@
+	g++ -c $< -o $@
 entities.o: ../entities/entities.cpp ../entities/entities.h ../output_text/output_text.h
 	g++ -c $< -o $@
 healing.o: ../healings/healing.cpp ../healings/healing.h ../output_text/output_text.h
