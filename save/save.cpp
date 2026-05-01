@@ -52,7 +52,8 @@ void saveGame(const string& filename, const Map& map, const Player& player,
     // 4. Weapons inventory (skip Fist at index 0? Save all for simplicity)
     out << player.weaponsInv.size() << endl;
     for (auto w : player.weaponsInv) {
-        out << w->name << " " << w->durability << endl;
+        out << w->name << endl;
+        out << w->durability << endl;
     }
 
     // 5. Healings inventory
@@ -89,7 +90,8 @@ void saveGame(const string& filename, const Map& map, const Player& player,
             // dropped weapons
             out << r.dropped_weapons.size() << endl;
             for (auto w : r.dropped_weapons) {
-                out << w->name << " " << w->durability << endl;
+                out << w->name << endl;
+                out << w->durability << endl;
             }
             // dropped healings
             out << r.dropped_healings.size() << endl;
@@ -124,7 +126,8 @@ bool loadGame(const string& filename, GameSaveData& outData) {
     outData.weapons.clear();
     for (size_t i = 0; i < wcount; i++) {
         string name; int dur;
-        in >> name >> dur;
+        getline(in >> std::ws, name);
+        in >> std::ws >> dur;
         outData.weapons.push_back({name, dur});
     }
 
@@ -134,7 +137,8 @@ bool loadGame(const string& filename, GameSaveData& outData) {
     outData.healings.clear();
     for (size_t i = 0; i < hcount; i++) {
         string name;
-        in >> name;
+        getline(in >> std::ws, name);
+        in >> std::ws;
         outData.healings.push_back(name);
     }
 
@@ -176,7 +180,8 @@ bool loadGame(const string& filename, GameSaveData& outData) {
             rs.dropped_weapons.clear();
             for (size_t i=0; i<dwcount; i++) {
                 string name; int dur;
-                in >> name >> dur;
+                getline(in >> std::ws, name);
+                in >> std::ws >> dur;
                 rs.dropped_weapons.push_back({name, dur});
             }
             size_t dhcount;
@@ -184,7 +189,8 @@ bool loadGame(const string& filename, GameSaveData& outData) {
             rs.dropped_healings.clear();
             for (size_t i=0; i<dhcount; i++) {
                 string name;
-                in >> name;
+                getline(in >> std::ws, name);
+                in >> std::ws;
                 rs.dropped_healings.push_back(name);
             }
         }
