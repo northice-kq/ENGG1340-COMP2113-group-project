@@ -3,6 +3,7 @@
 #include "../combat/combatRoom.h"
 #include "../entities/entities.h"
 #include <iostream>
+#include <limits>
 #include <thread>
 #include <cstdlib>
 #include <algorithm>  // for using shuffle
@@ -708,13 +709,13 @@ void check_room_for_items(Room& room, Player& player) {
 
         cout << "\nPick up an item? (w = weapon, h = healing, n = leave): ";
         string choice;
-        cin >> choice;
 
-         if (cin.fail()) {
-            cin.clear();
-            cin.ignore(numeric_limits<streamsize>::max(), '\n');
-            writer_print("Invalid input. Please type w, h, or n", false);
-            continue;
+        while (1) {
+            getline(cin >> ws, choice);
+            if (string("wWhHnN").find(choice) != -1) {
+                break;
+            }
+            writer_print("Invalid input. Please type w, h, or n: ", false, false);
         }
 
         if (choice == "n" || choice == "N") {
@@ -741,13 +742,15 @@ void check_room_for_items(Room& room, Player& player) {
             }
 
             cout << "\nWhich weapon to pick up? (1-" << room.dropped_weapons.size() << ", or 0 to cancel): " << flush;
-            int index;
+            int index = -1;
 
-            while (!(cin >> index) || index < 0 || index > (int)room.dropped_weapons.size()) {
-                cout << "Invalid choice" << endl;
-                cout << "\nWhich weapon to pick up? (1-" << room.dropped_weapons.size() << ", or 0 to cancel): " << flush; // deleted "-1" to exclude fist
+            while (1) {
+                cin >> index;
                 cin.clear();
                 cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                if (index >= 0 && index <= room.dropped_weapons.size()) break;
+                cout << "Invalid choice" << endl;
+                cout << "Which weapon to pick up? (1-" << room.dropped_weapons.size() << ", or 0 to cancel): " << flush;
             }
             
             if (index == 0) continue;
@@ -766,13 +769,7 @@ void check_room_for_items(Room& room, Player& player) {
                 // Offer to discard
                 cout << "\n  Discard a weapon? (y/n): " << flush;
                 string discard_choice;
-                cin >> discard_choice;
-
-                if (cin.fail()) {
-                    cin.clear();
-                    cin.ignore(numeric_limits<streamsize>::max(), '\n');
-                    continue;
-                }
+                getline(cin >> ws, discard_choice);
 
                 if (discard_choice == "y" || discard_choice == "Y") {
                     // Show only discardable weapons (no Fist)
@@ -781,13 +778,17 @@ void check_room_for_items(Room& room, Player& player) {
                         cout << "    " << i << ". " << player.weaponsInv[i]->shortDescription() << "\n";
                     }    
                     cout << "  Choose weapon to discard (1-" << player.weaponsInv.size() -1 << ", or 0 to cancel): " << flush;
-                    int discard_index;
-                    while (!(cin >> discard_index) || discard_index < 1 || discard_index > (int)player.weaponsInv.size() - 1) {
-                        if (discard_index == 0) break;
-                        cout << "Invalid choice. Enter 1-" << player.weaponsInv.size() - 1 << " (or 0 to cancel): " << flush;
+                    int discard_index = -1;
+
+                    while (1) {
+                        cin >> discard_index;
                         cin.clear();
                         cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                        if (discard_index >= 0 && discard_index <= player.weaponsInv.size()) break;
+                        cout << "Invalid choice" << endl;
+                        cout << "  Choose weapon to discard (1-" << player.weaponsInv.size() -1 << ", or 0 to cancel): " << flush;
                     }
+
                     if (discard_index == 0) continue;
 
                     Weapon* discarded = player.weaponsInv[discard_index];
@@ -827,14 +828,18 @@ void check_room_for_items(Room& room, Player& player) {
             }
 
             cout << "\nWhich healing to pick up? (1-" << room.dropped_healings.size() << ", or 0 to cancel): " << flush;
-            int index;
+            int index = -1;
 
             //validation
-            while (!(cin >> index) || index < 0 || index > (int)room.dropped_healings.size()) {
-                cout << "Invalid choice. Enter 1-" << room.dropped_healings.size() << " (or 0 to cancel): " << flush;
+            while (1) {
+                cin >> index;
                 cin.clear();
                 cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                if (index >= 0 && index <= room.dropped_healings.size()) break;
+                cout << "Invalid choice" << endl;
+                cout << "Which healing to pick up? (1-" << room.dropped_healings.size() << ", or 0 to cancel): " << flush;
             }
+
             if (index == 0) continue;
 
             Healing* to_pickup = room.dropped_healings[index - 1];
@@ -851,17 +856,20 @@ void check_room_for_items(Room& room, Player& player) {
                 // offer to discard, can pick up instantly after discard
                 cout << "\nDiscard a healing? (y/n): " << flush;
                 string discard_choice;
-                cin >> discard_choice;
+                getline(cin >> ws, discard_choice);
 
                 if (discard_choice == "y" || discard_choice == "Y") {
                     cout << "\nYour healing inventory:\n";
                     player.showHealings();
                     cout << "\nChoose healing to discard (1-" << player.healingsInv.size() << ", or 0 to cancel): " << flush;
                     int discard_index;
-                    while (!(cin >> discard_index) || discard_index < 0 || discard_index > (int)player.healingsInv.size()) {
-                        cout << "Invalid choice. Enter 1-" << player.healingsInv.size() << " (or 0 to cancel): " << flush;
+                    while (1) {
+                        cin >> discard_index;
                         cin.clear();
                         cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                        if (discard_index >= 0 && discard_index <= player.healingsInv.size()) break;
+                        cout << "Invalid choice" << endl;
+                        cout << "  Choose healing to discard (1-" << player.healingsInv.size() -1 << ", or 0 to cancel): " << flush;
                     }
                     if (discard_index == 0) continue;
                     
@@ -881,11 +889,6 @@ void check_room_for_items(Room& room, Player& player) {
                     }
                 }
             }
-        }
-        else {
-            writer_print("Invalid choice. Type w, h, or n");
-            cin.clear();
-            cin.ignore(numeric_limits<streamsize>::max(), '\n');
         }
     }
 }

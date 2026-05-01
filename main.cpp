@@ -104,7 +104,7 @@ int main() {
 
         while (true) {
             writer_print("Your move: ", false, false);
-            cin >> command;
+            getline(cin, command);
 
             // quit
             if (command == "quit" || command == "q" || command == "Quit") {
@@ -136,8 +136,6 @@ int main() {
             }
             // Invalid — clear and retry without reprinting map
             writer_print("Invalid command! Use: up/down/left/right (or u/d/l/r), save, quit",false);
-            cin.clear();
-            cin.ignore(numeric_limits<streamsize>::max(), '\n');
         }
 
         if (!game_running) break; // player quit or saved

@@ -45,9 +45,12 @@ void writer_print(const string& text, bool is_dots, bool is_new_line, int char_d
 }
 
 void press_enter_to_continue() {
-    cin.ignore(numeric_limits<streamsize>::max(), '\n'); // prevent bug
     cout << "[Press Enter to continue...]" << flush;
-    cin.get();
+    cin.clear();
+    if (cin.rdbuf()->in_avail() > 0) {
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+    }
+    cin.ignore(numeric_limits<streamsize>::max(), '\n'); // prevent bug
 }
 
 void scene_break() {
