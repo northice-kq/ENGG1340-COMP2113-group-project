@@ -60,14 +60,14 @@ int main() {
         int diff_choice;
         while (true) {
             cin >> diff_choice;
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
             if (diff_choice == 1 || diff_choice ==2) {
                 break;
             }
             writer_print("Invalid command! Please select difficulty");
             writer_print("Invalid choice! Please enter 1 or 2.", false);
             cout << "Choice: ";
-            cin.clear();
-            cin.ignore(numeric_limits<streamsize>::max(), '\n');
         }      
         is_hard = (diff_choice == 2);
 
