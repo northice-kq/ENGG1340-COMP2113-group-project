@@ -16,7 +16,6 @@ struct Map {
     bool escapeRevealed;
 
     Map(bool is_hard_difficulty); // constructor
-    Map(std::string filepath);    // restore game from text file (implement later)
     ~Map();                         // destructor (not strictly needed but good habit)
 
     void printMap() const;          // display the grid with @ . ?
@@ -26,8 +25,6 @@ struct Map {
     /* linking the escape room with room.cpp
      * return the square of the escape room - @north_ice */
     void setEscapeRoom(int x, int y);
-    Player& getPlayer() { return player; }
-    int getSize() const { return size; }
 };
 
 #endif

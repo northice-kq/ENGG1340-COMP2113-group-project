@@ -33,8 +33,8 @@ int main() {
         if (loadGame("savegame.txt", saveData)) {
             // Create temporary map with the saved difficulty, then restore full state
             dungeon = new Map(saveData.is_hard);
-            player_ptr = &(dungeon->getPlayer());
-            room_grid = assign_rooms(dungeon->getSize(), is_hard);  // temporary, will be overwritten
+            player_ptr = &(dungeon->player);
+            room_grid = assign_rooms(dungeon->size, is_hard);  // temporary, will be overwritten
             restoreGame(saveData, *dungeon, *player_ptr, room_grid);
             is_hard = saveData.is_hard;
             loaded = true;
@@ -72,8 +72,8 @@ int main() {
         is_hard = (diff_choice == 2);
 
         dungeon = new Map(is_hard);          // create map
-        player_ptr = &(dungeon->getPlayer());
-        int size = dungeon->getSize();
+        player_ptr = &(dungeon->player);
+        int size = dungeon->size;
         room_grid = assign_rooms(size, is_hard); // assigning the rooms
         this_thread::sleep_for(chrono::milliseconds(1500));
 
@@ -85,7 +85,7 @@ int main() {
     // Now use pointers for the rest of the game
     Map& dungeon_ref = *dungeon;
     Player& player = *player_ptr;
-    int size = dungeon_ref.getSize();
+    int size = dungeon_ref.size;
 
     bool game_running = true;
     bool player_won = false;
@@ -143,8 +143,8 @@ int main() {
         if (!game_running) break; // player quit or saved
 
         // get current room
-        int px = dungeon_ref.getPlayer().playerX;
-        int py = dungeon_ref.getPlayer().playerY;
+        int px = dungeon_ref.player.playerX;
+        int py = dungeon_ref.player.playerY;
         Room& current_room = room_grid[py][px];
 
         // handle room
