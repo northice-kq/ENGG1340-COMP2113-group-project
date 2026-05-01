@@ -67,17 +67,19 @@ void combatRoom(Player &p1, Enemy* currentEnemy, bool isHard) {
         while (choice != "attack"){
             cout << "To attack, type \"attack\" , To heal yourself, type \"heal\", To show both inventories, type \"show\". " << endl;
             cout << "Type your choice here: ";
-            cin >> choice;
+            getline(cin >> ws, choice);
             if (choice == "attack"){
                 int weaponchoice = 1;
                 if (p1.weaponsInv.size() > 1) {
                     p1.showWeapons(true);
                     this_thread::sleep_for(chrono::milliseconds(1000));
-                    cout << "Which weapon do you want to use? Type the number: ";
-                    while (!(cin >> weaponchoice) || weaponchoice < 1 || weaponchoice > p1.weaponsInv.size()) {
-                        cout << "Please enter a valid number." << endl;
+                    cout << "Which weapon do you want to use? Type the number: " << flush;
+                    while (1) {
+                        cin >> weaponchoice;
                         cin.clear(); cin.ignore(1000, '\n');
-                        continue;
+                        if (weaponchoice >= 1 && weaponchoice <= p1.weaponsInv.size()) break;
+                        cout << "Please enter a valid number." << endl;
+                        cout << "Which weapon do you want to use? Type the number: " << flush;
                     }
                 }
                 cout << endl;
@@ -96,12 +98,14 @@ void combatRoom(Player &p1, Enemy* currentEnemy, bool isHard) {
                     continue;
                 }
                 p1.showHealings();
-                int healingchoice;
+                int healingchoice = -1;
                 cout << "Which healing tool do you want to use? Type the number: ";
-                while (!(cin >> healingchoice) || healingchoice < 1 || healingchoice > p1.healingsInv.size()) {
-                    cout << "Please enter a valid number." << endl;
+                while (1) {
+                    cin >> healingchoice;
                     cin.clear(); cin.ignore(1000, '\n');
-                    continue;
+                    if (healingchoice >= 1 && healingchoice <= p1.healingsInv.size()) break;
+                    cout << "Please enter a valid number." << endl;
+                    cout << "Which healing tool do you want to use? Type the number: ";
                 }
                 p1.useHealing(healingchoice-1);
             }
@@ -142,10 +146,13 @@ void combatRoom(Player &p1, Enemy* currentEnemy, bool isHard) {
         int lane = 0;
         if (currentEnemy->name == "Mage"){
             cout << "The mage will attack on of the three lanes, type '1','2', or '3' to dodge the attack! " << endl;
-            cout << "Enter your choice: ";
-            while (!(cin >> lane) || lane < 1 || lane > 3) {
-                cout << "Please enter a valid number." << endl;
+            cout << "Enter your choice: " << flush;
+            while (1) {
+                cin >> lane;
                 cin.clear(); cin.ignore(1000, '\n');
+                if (lane >= 1 && lane <= 3) break;
+                cout << "Please enter a valid number." << endl;
+                cout << "Enter your choice: " << flush;
             }
             p1.HP -= currentEnemy->attackAction(lane);
         }
