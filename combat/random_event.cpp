@@ -89,15 +89,31 @@ bool RandomEvent::triggerEvent(Player* player, Enemy* currentEnemy, bool& lootDr
         writer_print("The enemy lowers their weapon and offers a deal...", true);
         writer_print("[1] Accept (Get healing potion + half XP)", false);
         writer_print("[2] Reject (Enemy becomes enraged)", false);
-        cout << "Enter your choice (1 or 2): ";
+    
+        int choice = 0;
+        bool validInput = false;
+    
+        while (!validInput) {
+            cout << "Enter your choice (1 or 2): ";
         
-        int choice = 2;
-        cin >> choice;
-        cin.clear(); cin.ignore(1000, '\n');
-        
+            if (cin >> choice) {
+                if (choice == 1 || choice == 2) {
+                    validInput = true;
+                } else {
+                    cout << "Invalid choice! Please enter 1 or 2." << endl;
+                }
+            } else {
+                cout << "Invalid input! Please enter a number (1 or 2)." << endl;
+                cin.clear();
+                cin.ignore(1000, '\n');
+            }
+        }
+    
+        cin.ignore(1000, '\n');
+    
         if (choice == 1) {
             writer_print("You accept the truce.", true);
-            
+        
             if (player->healingsInv.size() < player->healingCap) {
                 Healing* potion = new medKit();
                 player->pickupHealings(potion);
@@ -105,22 +121,22 @@ bool RandomEvent::triggerEvent(Player* player, Enemy* currentEnemy, bool& lootDr
             } else {
                 writer_print("Your inventory is full, but you survived!", false);
             }
-            
+        
             player->kill_count++;
             writer_print("You gained experience from the encounter.", true);
-            
+        
             lootDrop = false;
-            return true; // combat ends
+            return true;
         } else {
             writer_print("You reject the deal! The enemy fights with increased rage!", true);
             currentEnemy->attack = currentEnemy->attack * 1.1;
-            
+        
             oss.str("");
             oss << "Enemy attack increased to " << currentEnemy->attack << "!";
             writer_print(oss.str(), true);
-            
+        
             lootDrop = true;
-            return false; // combat continues
+            return false;
         }
     }
     else if (eventName == "[Storm's Fury]") {
