@@ -91,8 +91,9 @@ bool RandomEvent::triggerEvent(Player* player, Enemy* currentEnemy, bool& lootDr
         writer_print("[2] Reject (Enemy becomes enraged)", false);
         cout << "Enter your choice (1 or 2): ";
         
-        int choice;
+        int choice = 2;
         cin >> choice;
+        cin.clear(); cin.ignore(1000, '\n');
         
         if (choice == 1) {
             writer_print("You accept the truce.", true);
