@@ -78,7 +78,8 @@ The player can collect and manage various weapons and healing items.
 * Weapons include Sword, Axe, Calculator Gun, and Railgun.
 * Healing items include Bandage, First Aid Kit, and Med Kit.
 * Each item has unique effects and limitations.
-* Inventory has capacity limits, requiring players to manage resources strategically.
+* Inventory system supports persistent weapon durability and healing item restoration through file save/load
+* Weapons and healings are dynamically reconstructed using factory functions during game loading
 * Items can be picked up from chests or dropped into rooms.
 
 Supported Coding Requirements:
@@ -124,12 +125,32 @@ Supported Coding Requirements:
 * (5) Multiple files: Difficulty logic is integrated into map initialization.
 * (6) Multiple difficulty levels
 
+### 3.7 Save and Load System (File I/O)
+
+The game supports a full save and load system, allowing players to continue progress across sessions.
+
+* The game state is saved into a file (savegame.txt)
+* Player stats, inventory, map exploration, room states, and escape room position are all stored
+* When the game starts, the system checks if a save file exists and allows the player to load previous progress
+* If no save file is found, a new game is started automatically
+* The system reconstructs dynamic memory objects (weapons/healings) upon loading
+
+Supported Coding Requirements:
+
+* (4) File input/output: Game state is fully serialized and restored using file stream operations 
+* (3) Dynamic memory management: Inventory objects are re-created using new during restore
+* (2) Data structures: Full game state stored in structured GameSaveData
+* (5) Multiple files: Implemented in save.cpp, save.h
+
 ## 4. Non-standard C/C++ Libraries
 
-The following non-standard header files are included. They are used for a few low-level interactions with the Linux operating system.
-* `<termios.h>`
-* `<unistd.h>`
-* `<fcntl.h>`
+The following system-level libraries are used to support real-time keyboard input and terminal control:
+
+* `<termios.h>`: used for disabling buffered input (real-time movement control)
+* `<unistd.h>`: used for low-level POSIX system calls (input handling and delays)
+* `<fcntl.h>`: used for controlling file descriptor behaviour (non-blocking input)
+
+These libraries are used to implement smooth real-time movement and interactive gameplay in the terminal environment.
 
 Other functionalities are implemented using standard C++ libraries, including:
 
