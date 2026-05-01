@@ -360,6 +360,7 @@ void enter_chest_room(Room& room, Player& player) {
         if (!success) {
             writer_print("But your healing inventory is full!");
             drop_healing_in_room(room, new_healing);
+            check_room_for_items(room, player);
         }
 
         room.chest_looted = true;
@@ -488,6 +489,7 @@ void enter_chest_room(Room& room, Player& player) {
                 writer_print("But your weapon inventory is full!");
                 writer_print("Consider discarding a weapon");
                 drop_weapon_in_room(room, new_weapon);
+                check_room_for_items(room, player);
             }
         }
 

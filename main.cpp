@@ -188,14 +188,6 @@ int main() {
                 game_running = false;
                 break;
         }
-
-        // check dropped items after any room entry (except mirror warning rooms)
-        if (game_running && !current_room.has_warning) {
-            if (!current_room.dropped_weapons.empty() || !current_room.dropped_healings.empty()) {
-                check_room_for_items(current_room, player);
-            }
-        }
-
         cout << "\n";
     }
 
