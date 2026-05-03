@@ -16,10 +16,14 @@ public:
     virtual ~Enemy();
     //constructor of a standard enemy, input are hp, attack, type of enemy
     Enemy(int h, int a, string name);
-    
+    //enemy will deduct its hp by inputted integer, which is damage
     void takedamage(int damage);
+    //print the description of the enemy
     void printEnemyDescription();
+    //return an integer, which is the damage to be deal to the player
+    //input number only will be used when the enemy type is mage
     virtual int attackAction(int l);
+    //return whether dodge succeed, only apply to assassin, otherwise, the dodge will fail
     virtual bool attemptDodge() {
         return false;
     }
