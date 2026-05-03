@@ -7,6 +7,12 @@
 
 using namespace std;
 
+/*
+ * What it does: Factory function: creates a Weapon object from its name and durability.
+ * Inputs: name - weapon type as string ("Fist", "Sword", "Axe", "Calculator gun", "Railgun")
+ *         durability - initial durability value (0-100 or INT_MAX)
+ * Outputs: Returns a pointer to a dynamically allocated Weapon (caller must delete).
+ */
 // Helper: weapon name -> new Weapon* (factory)
 static Weapon* createWeapon(const string& name, int durability) {
     if (name == "Fist") return new Fist(durability);
@@ -25,6 +31,15 @@ static Healing* createHealing(const string& name) {
     return new bandage(); // fallback
 }
 
+/*
+ * What it does: Saves the entire game state to a text file.
+ * Inputs: filename - name of the file to write to
+ *         map - Map object (difficulty, size, explored grid, escape room info)
+ *         player - Player object (stats, position, inventory)
+ *         room_grid - 2D vector of Room objects (type, flags, dropped items)
+ * Outputs: None. On success, prints "Game saved to ..." message.
+ *          On failure (cannot open file), prints error to cerr.
+ */
 void saveGame(const string& filename, const Map& map, const Player& player,
               const vector<vector<Room>>& room_grid) {
     ofstream out(filename);
@@ -104,6 +119,13 @@ void saveGame(const string& filename, const Map& map, const Player& player,
     cout << "Game saved to " << filename << endl;
 }
 
+/*
+ * What it does: Reads a save file and populates a GameSaveData structure.
+ * Inputs: filename - name of the file to read
+ *         outData - reference to GameSaveData that will hold the loaded data
+ * Outputs: Returns true if file was successfully read and data is valid.
+ *          Returns false if file cannot be opened or size mismatch occurs.
+ */
 bool loadGame(const string& filename, GameSaveData& outData) {
     ifstream in(filename);
     if (!in) return false;
@@ -199,6 +221,15 @@ bool loadGame(const string& filename, GameSaveData& outData) {
     return true;
 }
 
+/*
+ * What it does: Restores the game objects (Map, Player, room_grid) from loaded data.
+ * Inputs: data - GameSaveData filled by loadGame()
+ *         map - reference to the Map object to be overwritten with saved data
+ *         player - reference to the Player object to be overwritten
+ *         room_grid - reference to the 2D room grid to be replaced
+ * Outputs: None (all three objects are modified directly).
+ *          Previously existing dynamic memory (weapons/healings) is properly deleted.
+ */
 void restoreGame(GameSaveData& data, Map& map, Player& player,
                  vector<vector<Room>>& room_grid) {
     // Restore Map fields
