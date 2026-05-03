@@ -7,6 +7,12 @@
 #include <vector>
 #include <string>
 
+/*
+ * What it does: Holds all game data that can be saved to or loaded from a file.
+ *               Contains player stats, inventory, map exploration, and room grid.
+ * Inputs: None (this is a data structure).
+ * Outputs: None (used as a container for save/load functions).
+ */
 // All game data needed to save/load
 struct GameSaveData {
     bool is_hard;
@@ -43,16 +49,34 @@ struct GameSaveData {
     std::vector<std::vector<RoomSaveData>> rooms;
 };
 
-// Save the entire game to a file
+/*
+ * What it does: Writes the current game state to a text file.
+ * Inputs: filename - name of the save file
+ *         map - the Map object (grid size, exploration, escape room info)
+ *         player - the Player object (stats, inventory, keys, etc.)
+ *         room_grid - 2D vector of Room objects (all room types and flags)
+ * Outputs: None (creates/overwrites a file, prints success/error message)
+ */
 void saveGame(const std::string& filename, const Map& map, const Player& player,
               const std::vector<std::vector<Room>>& room_grid);
 
-// Load from file; returns true if success, false otherwise.
-// The loaded data is returned via the GameSaveData struct.
+/*
+ * What it does: Reads a save file and fills the GameSaveData structure.
+ * Inputs: filename - name of the save file to read
+ *         outData - reference to GameSaveData to be filled with loaded data
+ * Outputs: Returns true if loading succeeded, false otherwise (file missing or corrupted).
+ */
 bool loadGame(const std::string& filename, GameSaveData& outData);
 
-// Restore the game from loaded data into the current game objects.
-// This function modifies the map, player, and room_grid.
+/*
+ * What it does: Restores the game state from loaded data into the current Map,
+ *               Player, and room grid (replacing existing content).
+ * Inputs: data - the GameSaveData filled by loadGame()
+ *         map - reference to the Map object to be restored
+ *         player - reference to the Player object to be restored
+ *         room_grid - reference to the room grid to be restored
+ * Outputs: None (directly modifies map, player, and room_grid).
+ */
 void restoreGame(GameSaveData& data, Map& map, Player& player,
                  std::vector<std::vector<Room>>& room_grid);
 
