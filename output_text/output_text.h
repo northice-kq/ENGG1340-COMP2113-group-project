@@ -18,6 +18,7 @@ using namespace std;
 //                                 (default 20ms for normal pace)
 //          dot_delay    - milliseconds delay between each dot
 //                                  (default 100ms for dramatic trailing and enhance readability)
+// Outputs: same text, but with a typewriter effects and optional dotting
 
 //          NOTE!!!! To use the default settings, omit the last two perimeters
 
@@ -26,6 +27,7 @@ void writer_print(const string& text, bool is_dots = true, bool is_new_line = tr
 //
 // What it does: waits for the player to press Enter before continuing.
 //              let player acknowledge info before continuing
+//              accept an enter to continue the game
 
 void press_enter_to_continue();
 
@@ -33,6 +35,7 @@ void press_enter_to_continue();
 // What it does: Prints a short horizontal divider and pauses briefly.
 //              Used to separate sections of the game
 //              No input is needed
+//              Outputs are multiple asterisks to seperate contents
 
 void scene_break();
 
