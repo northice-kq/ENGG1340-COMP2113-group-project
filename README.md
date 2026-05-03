@@ -182,11 +182,11 @@ How to Play
 * Grid Map Display
 The dungeon map is shown as a grid with column and row numbers for navigation. Each cell represents a room and uses the following symbols:
 
-Symbol	Meaning
-`[@]`	Player's current position
-`[X]`	Escape room (revealed after collecting all 3 keys)
-`[.]`	Explored room (already visited)
-`[?]`	Unexplored room (not yet visited)
+*Symbol	Meaning
+*`[@]`	Player's current position
+*`[X]`	Escape room (revealed after collecting all 3 keys)
+*`[.]`	Explored room (already visited)
+*`[?]`	Unexplored room (not yet visited)
 
 Notes:
 * g++ and make must be installed to compile the game.
