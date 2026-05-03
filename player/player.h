@@ -17,16 +17,32 @@ struct Player {
     std::vector<Weapon*> weaponsInv;
     std::vector<Healing*> healingsInv;
 
-    Player(bool is_hard_difficulty);
-    bool pickupWeapon(Weapon* weapon);
+    Player(bool is_hard_difficulty); // constructor
+    bool pickupWeapon(Weapon* weapon); 
+    // call to add a weapon to player inventory
+    // return whether the operation is successful or not
     bool discardWeapon(int index);
+    // call to discard a weapon from player inventory
+    // return whether the operation is successful or not
     int attackEnemy(int index);
+    // call to perform attack using a weapon in player inventory
+    // return final damage dealt by player (player attack + damage dealt by weapon)
     bool pickupHealings(Healing* healing);
+    // call to add a healing to player inventory
+    // return whether the operation is successful or not
     bool discardHealings(int index);
+    // call to discard a healing from player inventory
+    // return whether the operation is successful or not
     bool useHealing(int index);
+    // call to use a healing in player inventory
+    // return whether the operation is successful or not
     void showWeapons(bool showFist);
+    // print all weapons information in player inventory
+    // set showFist to false to hide player's fist in the output
     void showHealings();
+    // print all healings information in player inventory
     void showStats();
+    // print important stats of player such as player HP
 };
 
 #endif
