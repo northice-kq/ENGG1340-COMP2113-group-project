@@ -170,7 +170,15 @@ These standard libraries support core game features such as random dungeon gener
 
 Simply execute the `game.sh` bash script to compile and run the game.
 
+How to Play
+* Difficulty: Choose Easy (5x5 grid) or Hard (7x7 grid)
+* Movement: Type up/down/left/right or u/d/l/r
+* Combat: Type attack, heal, or show during battles
+* Items: Pick up weapons (w), healings (h), or leave them (n), if your inventory is full
+* Dodge: Press r when the o is inside the brackets [ ]
+* Railgun: Press spacebar when the power level is at maximum
+* Quit: Type quit or q at any time
+
 Notes:
 * g++ and make must be installed to compile the game.
 * The program is designed to run on the Linux operating system.
-* If compilation fails, ensure all .cpp and .h files are included in the correct directory.
