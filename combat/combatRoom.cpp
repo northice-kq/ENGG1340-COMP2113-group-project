@@ -10,6 +10,8 @@
 
 using namespace std;
 
+// What it does: enter a turn based combat round
+// What the inputs are: player, pointer of generated enemy
 void combatRoom(Player &p1, Enemy* currentEnemy, bool isHard) {
     
     //Showing the enemy's stat
