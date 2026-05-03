@@ -13,9 +13,16 @@ struct Weapon {
     // if critHitRate = n then have 1/n chance of crit hit
     // -1 means no crit hit is possible
     Weapon(std::string name, std::string description, int baseDamage,
-           int durability, int critHitRate); // constructor for weapons
+           int durability, int critHitRate);
+    // constructor for weapons
+    // set weapon name, description, base damage, durability and critical hite rate
+    // based on parameter inputs
     std::string shortDescription() const;
+    // helper function to print out the weapon information (name + durability)
+    // return the string to be printed
     std::string longDescription() const;
+    // helper function to print out more weapon information
+    // return the string to be printed
     virtual int useWeapon() = 0; 
     // call this to use the weapon once
     // return the damage dealt by weapon
