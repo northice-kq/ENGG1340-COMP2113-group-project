@@ -1,0 +1,180 @@
+#include "combatRoom.h"
+#include "dodge.h"
+#include "random_event.h"
+#include "../output_text/output_text.h" // allow writer_print();
+#include <iostream>
+#include <cstdlib>
+#include <thread>
+#include <chrono>
+#include <iomanip>
+
+using namespace std;
+
+void combatRoom(Player &p1, Enemy* currentEnemy, bool isHard) {
+    
+    //Showing the enemy's stat
+    cout << "\n--- BATTLE START ---" << endl;
+    cout << "You encountered this enemy..." << endl;
+    currentEnemy->printEnemyDescription();
+    this_thread::sleep_for(chrono::milliseconds(1500));
+
+    // ===== RANDOM EVENT SETUP =====
+    bool eventWillHappen = shouldTriggerRandomEvent(isHard);
+    int eventRound = -1;
+    bool eventHasTriggered = false;
+    int currentRound = 0;
+    
+    if (eventWillHappen) {
+        eventRound = getEventTriggerRound();  // 4, 5, or 6
+        writer_print("\n[Something feels strange in the air...]", true);
+        this_thread::sleep_for(chrono::milliseconds(1000));
+    }
+    // ===== END OF SETUP =====
+    
+    //loop body
+    while (p1.HP > 0 && currentEnemy->hp > 0){
+
+        currentRound++; 
+
+        // ===== CHECK IF RANDOM EVENT SHOULD TRIGGER THIS ROUND =====
+        if (eventWillHappen && !eventHasTriggered && currentRound == eventRound) {
+            eventHasTriggered = true;
+            
+            RandomEvent randomEvent = getRandomEvent();
+            bool lootDropFromEvent = true;
+            bool endCombat = randomEvent.triggerEvent(&p1, currentEnemy, lootDropFromEvent);
+            
+            // Check if player died from event
+            if (p1.HP <= 0) {
+                cout << "Game Over... You died in the dungeon." << endl;
+                return;
+            }
+            
+            // Check if combat ended (enemy escaped or truce accepted)
+            if (endCombat) {
+                if (p1.HP > 0) {
+                    writer_print("\nThe battle is over.", false);
+                    this_thread::sleep_for(chrono::milliseconds(1000));
+                }
+                return; // Exit combat
+            }
+        }
+        // ===== END OF RANDOM EVENT CHECK =====
+        
+        //part 1: player combat
+        cout << "\n[Your Turn]" << endl;
+        string choice = "";
+        while (choice != "attack"){
+            cout << "To attack, type \"attack\" , To heal yourself, type \"heal\", To show both inventories, type \"show\". " << endl;
+            cout << "Type your choice here: ";
+            getline(cin >> ws, choice);
+            if (choice == "attack"){
+                int weaponchoice = 1;
+                if (p1.weaponsInv.size() > 1) {
+                    p1.showWeapons(true);
+                    this_thread::sleep_for(chrono::milliseconds(1000));
+                    cout << "Which weapon do you want to use? Type the number: " << flush;
+                    while (1) {
+                        cin >> weaponchoice;
+                        cin.clear(); cin.ignore(1000, '\n');
+                        if (weaponchoice >= 1 && weaponchoice <= p1.weaponsInv.size()) break;
+                        cout << "Please enter a valid number." << endl;
+                        cout << "Which weapon do you want to use? Type the number: " << flush;
+                    }
+                }
+                cout << endl;
+                this_thread::sleep_for(chrono::milliseconds(1000));
+                if (!(currentEnemy->attemptDodge())){
+                    currentEnemy->hp -= p1.attackEnemy(weaponchoice - 1);
+                }
+                else{ cout << "The assassin dodged your attack! Attack failed" << endl; }
+                cout << "Remaining hp of the enemy: " << ((currentEnemy->hp < 0 )? 0 : currentEnemy->hp) << endl;
+                this_thread::sleep_for(chrono::milliseconds(1500));
+            }
+            else if (choice == "heal"){
+                if (p1.healingsInv.size() == 0){
+                    cout << "Your healing inventory is empty." << endl;
+                    this_thread::sleep_for(chrono::milliseconds(1000));
+                    continue;
+                }
+                p1.showHealings();
+                int healingchoice = -1;
+                cout << "Which healing tool do you want to use? Type the number: ";
+                while (1) {
+                    cin >> healingchoice;
+                    cin.clear(); cin.ignore(1000, '\n');
+                    if (healingchoice >= 1 && healingchoice <= p1.healingsInv.size()) break;
+                    cout << "Please enter a valid number." << endl;
+                    cout << "Which healing tool do you want to use? Type the number: ";
+                }
+                p1.useHealing(healingchoice-1);
+            }
+            else if (choice == "show"){
+                p1.showWeapons(true);
+                p1.showHealings();
+                this_thread::sleep_for(chrono::milliseconds(1000));
+            }
+            else cout << "please input a valid choice" << endl;
+        }
+        
+        
+        // check if died
+        if (currentEnemy->hp <= 0) {
+            writer_print("\nVictory! You defeated the enemy.", false); // allow slower victory text - @north_ice
+            this_thread::sleep_for(chrono::milliseconds(1000));
+            writer_print("Leveled up! You are getting stronger.", false); // same as above - @north_ice
+            this_thread::sleep_for(chrono::milliseconds(1000));
+            
+            int HPreward = rand() % 6 + 5;
+            int Attackreward = rand() % 3 + 3;
+            p1.HP += HPreward;
+            p1.maxHP += HPreward;
+            p1.playerAttack += Attackreward;
+            p1.kill_count++;
+            
+            cout << "Player stat: " << endl;
+            cout << left << setw(9) << "Health: " << p1.HP-HPreward << '/' << p1.maxHP-HPreward << "->" << p1.HP << '/' << p1.maxHP << endl;
+            cout << left << setw(9) << "Attack: " << p1.playerAttack-Attackreward << "->" << p1.playerAttack << endl;
+            cout << "You have killed " << p1.kill_count << " enemies." << endl;
+            
+            return; // end battle
+        }
+        
+        // enemy turn
+        cout << "\n[Enemy's Turn]" << endl;
+        this_thread::sleep_for(chrono::milliseconds(500));
+        int lane = 0;
+        if (currentEnemy->name == "Mage"){
+            cout << "The mage will attack on of the three lanes, type '1','2', or '3' to dodge the attack! " << endl;
+            cout << "Enter your choice: " << flush;
+            while (1) {
+                cin >> lane;
+                cin.clear(); cin.ignore(1000, '\n');
+                if (lane >= 1 && lane <= 3) break;
+                cout << "Please enter a valid number." << endl;
+                cout << "Enter your choice: " << flush;
+            }
+            p1.HP -= currentEnemy->attackAction(lane);
+        }
+        else {
+            int roll = rand() % 100;
+            if (roll < (isHard? 30:50)){
+                if (!Dodge()) p1.HP -= currentEnemy->attackAction(lane);
+                //p1.HP -= currentEnemy->attackAction(lane);
+                this_thread::sleep_for(chrono::milliseconds(500));
+            }
+            else p1.HP -= currentEnemy->attackAction(lane);
+            this_thread::sleep_for(chrono::milliseconds(500));
+        }
+        if (p1.HP <= 0) {
+            p1.HP = 0;
+        }
+        cout << "Your HP: " << p1.HP << endl;
+        this_thread::sleep_for(chrono::milliseconds(1500));
+        
+        // check if player died
+        if (p1.HP <= 0) {
+            writer_print("Game Over... You died in the dungeon.", false);
+        }
+    }
+}

@@ -1,0 +1,100 @@
+// more complicated mechanics so put in a separate file
+#include "../output_text/output_text.h"
+#include "weapon.h"
+#include <chrono>
+#include <fcntl.h> // file control
+#include <iostream>
+#include <sstream>
+#include <termios.h> // for instant key responds
+#include <thread>
+#include <unistd.h> //unix
+
+Railgun::Railgun(int durability)
+    : Weapon("Railgun", "Charge up your attack!", 20, durability, -1) {}
+
+int Railgun::useWeapon() {
+    int damage = baseDamage;
+    // 00001111222233334444555544443333222211110000
+    const int width = 4, maxBonus = 5;
+    const int linewidth = width * (maxBonus * 2 + 1);
+    // delay: 20 to 40 ms
+    const int delay = rand() % 21 + 20;
+    writer_print("\nCharge the railgun!", false);
+    writer_print("Press space bar when the power level reaches level 5!",
+                 false);
+    std::cout << "[ ";
+    for (int i = 0; i < linewidth; i++) {
+        std::cout << (maxBonus - abs(i / width - maxBonus));
+    }
+    std::cout << " ]" << std::endl;
+    std::cout << "\033[s";
+    for (int i = 0; i < 6; i++) {
+        std::cout << "\033[2A";
+        std::cout << "\033[2K";
+        if (i % 2 == 0)
+            std::cout
+                << "Press space bar when the power level reaches level 5!\n";
+        else
+            std::cout << '\n';
+        std::cout << "\033[1B";
+        std::cout << std::flush;
+        std::this_thread::sleep_for(std::chrono::milliseconds(500));
+    }
+    std::cout << "\033[2A\033[2K";
+    std::cout << "Press space bar when the power level reaches level 5!\n";
+    std::cout << "\033[u" << std::flush;
+    std::cout << "\033[1A";
+
+    { // setNonBlocking(true)
+        termios ttystate;
+        tcgetattr(STDIN_FILENO, &ttystate);
+        ttystate.c_lflag &= ~ICANON;
+        ttystate.c_lflag &= ~ECHO;
+        ttystate.c_cc[VMIN] = 1;
+        tcsetattr(STDIN_FILENO, TCSANOW, &ttystate);
+    }
+    int bonus = 0;
+    for (int i = 0;; i++) {
+        int last = linewidth - 1;
+        int pos = last - abs(i % (2 * last) - last);
+        // print the line where the current position is replaced by ' '
+        std::cout << "\r[ ";
+        for (int j = 0; j < linewidth; j++) {
+            if (pos == j)
+                std::cout << ' ';
+            else
+                std::cout << (maxBonus - abs(j / width - maxBonus));
+        }
+        std::cout << " ]" << std::flush;
+
+        bool keyPressed = false;
+        {
+            timeval tv = {0L, 0L};
+            fd_set fds;
+            FD_ZERO(&fds);
+            FD_SET(STDIN_FILENO, &fds);
+            keyPressed = (select(STDIN_FILENO + 1, &fds, NULL, NULL, &tv) > 0);
+        }
+        if (keyPressed) {
+            char c = getchar();
+            if (c == ' ') {
+                bonus = (maxBonus - abs(pos / width - maxBonus));
+                break;
+            }
+        }
+        std::this_thread::sleep_for(std::chrono::milliseconds(delay));
+    }
+    std::cout << std::endl;
+    { // setNonBlocking(false)
+        termios ttystate;
+        tcgetattr(STDIN_FILENO, &ttystate);
+        ttystate.c_lflag |= ICANON;
+        ttystate.c_lflag |= ECHO;
+        tcsetattr(STDIN_FILENO, TCSANOW, &ttystate);
+    }
+    std::ostringstream oss;
+    oss << "Your railgun has charged to power level " << bonus;
+    writer_print(oss.str(), false);
+    damage += bonus * 3;
+    return damage;
+}
