@@ -14,6 +14,7 @@ public:
     int attack;
     
     virtual ~Enemy();
+    //constructor of a standard enemy, input are hp, attack, type of enemy
     Enemy(int h, int a, string name);
     
     void takedamage(int damage);
@@ -28,6 +29,7 @@ public:
 class Mage : public Enemy{
 public:
     int streak;
+    //constructor of mage, input are hp, attack, type of enemy
     Mage(int h, int att, string name);
     int attackAction(int l) override;
 };
@@ -37,11 +39,13 @@ class Assassin : public Enemy{
 public:
     double sneakRate;
     bool sneaked;
+    //constructor of assassin, input are hp, attack, type of enemy
     Assassin(int h, int att, string name);
     int attackAction(int l) override;
     bool attemptDodge() override;
 };
 
+//generate enemy based on difficulty and kill count
 Enemy* generateEnemy(int killcnt, bool isHard);
 
 #endif
