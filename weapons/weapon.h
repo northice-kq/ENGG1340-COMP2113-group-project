@@ -13,10 +13,12 @@ struct Weapon {
     // if critHitRate = n then have 1/n chance of crit hit
     // -1 means no crit hit is possible
     Weapon(std::string name, std::string description, int baseDamage,
-           int durability, int critHitRate);
+           int durability, int critHitRate); // constructor for weapons
     std::string shortDescription() const;
     std::string longDescription() const;
-    virtual int useWeapon() = 0;
+    virtual int useWeapon() = 0; 
+    // call this to use the weapon once
+    // return the damage dealt by weapon
 };
 
 struct Fist : Weapon {
@@ -30,7 +32,7 @@ struct Sword : Weapon {
 };
 
 struct Axe : Weapon {
-    Axe(int durabiltiy = 15);
+    Axe(int durability = 15);
     int useWeapon() override;
 };
 
