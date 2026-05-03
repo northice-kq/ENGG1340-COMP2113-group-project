@@ -48,6 +48,7 @@ struct Room {
     // Inputs:  room_type - the type of room (START, NOTHING, KEY, CHEST, ENEMY)
     //          x_co   - column position in the dungeon grid
     //          y_co  - row position in the dungeon grid
+    // Output: none, but rooms are assigned
 
     Room(Room_Type room_type, int x_co, int y_co);
 };
@@ -60,6 +61,7 @@ vector<vector<Room>> assign_rooms(int size, bool is_hard);
 
 
 // What it does: Handles the player entering every different types of rooms
+//               Inputs: Room& room are universal as to let the code knows the type of the room, & and modify whether the room has been (re)visited
 void enter_start_room(Room& room, Player& player);
 void enter_empty_room(Room& room, Player& player);
 void enter_key_room(Room& room, int& keys_collected, vector<vector<Room>>& grid, int size, int player_x, int player_y, Player& player);
