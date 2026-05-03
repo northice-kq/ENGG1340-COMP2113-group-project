@@ -11,6 +11,11 @@
 #include <sstream>
 using namespace std;
 
+// NOTE: Please read the in-code documentation in "room.h" instead
+//        Description at .h files are recommeneded
+//        In this file, there are comments only, on explaining small parts of the codes
+//        inc. probability, explaining small mechanisms behind
+
 Room::Room(Room_Type room_type, int x_co, int y_co) {
     type = room_type;
     x = x_co;
