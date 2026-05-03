@@ -55,7 +55,6 @@ int Sword::useWeapon() {
         writer_print("Your weapon has no durability!", false);
         return 0;
     }
-    // upgrading a level increases 20% damage
     // reduce 1 damage per 20 use
     int damage = baseDamage;
     damage -= (100 - durability) / 20;
@@ -76,7 +75,6 @@ int Axe::useWeapon() {
         writer_print("Your weapon has no durability!", false);
         return 0;
     }
-    // upgrading a level increases 20% damage
     int damage = baseDamage;
     if (rand() % critHitRate == 0) {
         damage *= 2;
