@@ -41,7 +41,9 @@ Supported Coding Requirements:
 
 Each room in the dungeon triggers different events when the player enters it.
 
-* Empty Room: triggers atmospheric text and optional rest events.
+* Empty Room: triggers atmospheric text and optional rest events. One variant
+           contains a cursed mirror.  Leaving and returning to this room
+           causes the reflection to attack
 * Chest Room: provides random loot such as weapons, healing items, or stat boosts.
 * Key Room: contains one of the three required keys to progress.
 * Enemy Room: triggers combat encounters.
